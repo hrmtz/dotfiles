@@ -4,21 +4,30 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-##### oh-my-zsh #####
-export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="powerlevel10k/powerlevel10k"
+##### zinit（プラグインマネージャ） #####
+# 初回だけ clone。既にあれば何もしない。
+if [[ ! -d ${HOME}/.zinit/bin ]]; then
+  mkdir -p "${HOME}/.zinit"
+  git clone https://github.com/zdharma-continuum/zinit.git "${HOME}/.zinit/bin"
+fi
 
-# 必要最低限。重い plugin は切る。
-plugins=(
-  git
-  zsh-completions
-)
+# zinit 読み込み
+source "${HOME}/.zinit/bin/zinit.zsh"
 
-source $ZSH/oh-my-zsh.sh
-
-##### Powerlevel10k #####
+##### Powerlevel10k 本体 #####
+# instant prompt の静音モード（元設定を維持）
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# p10k を shallow clone で取得
+zinit ice depth=1
+zinit light romkatv/powerlevel10k
+
+# p10k の設定ファイル（なければ `p10k configure` で作る）
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+
+##### 補完用プラグイン（oh-my-zsh の代わり） #####
+# oh-my-zsh の plugins=(zsh-completions) を zinit で置き換え
+zinit light zsh-users/zsh-completions
 
 ##### 基本オプション #####
 setopt AUTO_CD
