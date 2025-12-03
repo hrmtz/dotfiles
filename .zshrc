@@ -1,3 +1,6 @@
+echo ">>> LOADED FROM DOTFILES .zshrc <<<"
+
+
 ##### Powerlevel10k Instant Prompt #####
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
