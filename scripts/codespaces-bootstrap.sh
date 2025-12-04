@@ -5,5 +5,5 @@ set -euo pipefail
 
 if command -v apt >/dev/null 2>&1; then
   sudo apt-get update -y
-  sudo apt-get install -y fzf fd-find ripgrep
+  sudo apt-get install -y fzf fd-find ripgrep lsd
 fi
