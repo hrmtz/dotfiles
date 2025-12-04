@@ -56,10 +56,16 @@ if [[ ! -d ${HOME}/.zinit/bin ]]; then
 fi
 source "${HOME}/.zinit/bin/zinit.zsh"
 
+# Powerlevel10k 本体（テーマ）
+zinit ice depth=1
+zinit light romkatv/powerlevel10k
+
+# プラグイン
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light zdharma-continuum/fast-syntax-highlighting
 
+# p10k 設定ファイル
 if [[ -r "$HOME/.p10k.zsh" ]]; then
   source "$HOME/.p10k.zsh"
 fi
