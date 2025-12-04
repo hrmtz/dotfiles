@@ -83,10 +83,11 @@ typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   # Add an empty line before each prompt.
   typeset -g POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
 
-  # Connect left prompt lines with these symbols. (Codespaces: blue-ish)
-  typeset -g POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX='%33F╭─'
-  typeset -g POWERLEVEL9K_MULTILINE_NEWLINE_PROMPT_PREFIX='%33F├─'
-  typeset -g POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX='%33F╰─'
+  # Connect left prompt lines with these symbols. (Codespaces: ubuntu-ish)
+  # Ubuntu orange (approx: 208)
+  typeset -g POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX='%208F╭─'
+  typeset -g POWERLEVEL9K_MULTILINE_NEWLINE_PROMPT_PREFIX='%208F├─'
+  typeset -g POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX='%208F╰─'
   # Connect right prompt lines with these symbols.
   typeset -g POWERLEVEL9K_MULTILINE_FIRST_PROMPT_SUFFIX=
   typeset -g POWERLEVEL9K_MULTILINE_NEWLINE_PROMPT_SUFFIX=
@@ -132,9 +133,9 @@ typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   typeset -g POWERLEVEL9K_EMPTY_LINE_LEFT_PROMPT_LAST_SEGMENT_END_SYMBOL=
 
   #################################[ os_icon: os identifier ]##################################
-  # OS identifier color (Codespaces: bright on blue).
-  typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=255
-  typeset -g POWERLEVEL9K_OS_ICON_BACKGROUND=27
+  # OS identifier color (Ubuntu: light on purple)
+  typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=255   # white
+  typeset -g POWERLEVEL9K_OS_ICON_BACKGROUND=53    # dark magenta / aubergine
   # Custom icon.
   # typeset -g POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION='⭐'
 
@@ -162,9 +163,9 @@ typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   typeset -g POWERLEVEL9K_PROMPT_CHAR_LEFT_{LEFT,RIGHT}_WHITESPACE=
 
   ##################################[ dir: current directory ]##################################
-  # Current directory colors (Codespaces: dark blue background, white text).
-  typeset -g POWERLEVEL9K_DIR_BACKGROUND=19
-  typeset -g POWERLEVEL9K_DIR_FOREGROUND=255
+  # Current directory colors (Ubuntu: orange bar, white text)
+  typeset -g POWERLEVEL9K_DIR_BACKGROUND=208       # orange
+  typeset -g POWERLEVEL9K_DIR_FOREGROUND=255       # white
   # If directory is too long, shorten some of its segments to the shortest possible unique
   # prefix. The shortened directory can be tab-completed to the original.
   typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_unique
@@ -1285,7 +1286,7 @@ typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   #   typeset -g POWERLEVEL9K_TERRAFORM_CLASSES=(
   #     '*prod*'  PROD
   #     '*test*'  TEST
-  #     '*'       OTHER)
+  #     '*'         OTHER)
   #
   # If your current terraform workspace is "project_test", its class is TEST because "project_test"
   # doesn't match the pattern '*prod*' but does match '*test*'.
