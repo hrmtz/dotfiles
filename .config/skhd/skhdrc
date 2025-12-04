@@ -134,7 +134,7 @@ alt - r : yabai -m space --rotate 90
 # mirror tree y-axis
 alt - y : yabai -m space --mirror y-axis
 # mirror tree x-axis
-alt - x : yabai -m space --mirror x-axis
+alt - g : yabai -m space --mirror x-axis
 
 # restart yabai
 # from https://github.com/koekeishiya/yabai/wiki/Tips-and-tricks
