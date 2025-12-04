@@ -1,0 +1,239 @@
+{
+;; ----------------------------------
+;; this is my goku file for karabiner
+;; ----------------------------------
+;; more info about goku: https://github.com/yqrashawn/GokuRakuJoudo
+;; more info about karabiner: https://karabiner-elements.pqrs.org/docs
+;; ----------------------------------
+;; article karabiner god mode by nikita: https://medium.com/@nikitavoloboev/karabiner-god-mode-7407a5ddc8f6
+;; examples: https://github.com/yqrashawn/GokuRakuJoudo/blob/master/examples.org#profiles-wip
+;; tutorial: https://github.com/yqrashawn/GokuRakuJoudo/blob/master/tutorial.md#basic8
+;; another article: https://blog.jkl.gg/hacking-your-keyboard/
+;; very well documented edn file by Kaushik Gopal: https://gist.github.com/kaushikgopal/ff7a92bbc887e59699c804b59074a126
+;; key names: https://github.com/yqrashawn/GokuRakuJoudo/blob/master/src/karabiner_configurator/keys_info.clj
+
+:profiles {
+    :Default {
+        :default    true
+        :sim        200     ;; if keydown event for two different keys are pressed within :sim ms, the keypresses are considered simultaneous
+        :delay      200     ;; after :delay ms, the key press is considered to be delayed (TODO WHAT IS THIS??)
+        :alone      1000    ;; if keyup event comes within :alone ms from keydown, the key is not just pressed but held
+        :held       500     ;; key is fired twice when :held ms is elapsed (otherwise seen as a hold command) (TODO WHAT IS THIS??)
+    }
+} ;; profiles
+
+;; Define different kinds of keyboards
+:devices {
+    :apple-us [{:vendor_id 1452 :product_id 641}]
+    :apple-jis [{:vendor_id 1452 :product_id 833}]
+    :hhkb-bt [{:vendor_id 1278 :product_id 514}]
+    :barocco [{:vendor_id 1241 }]
+    :keyball [{:vendor_id 22871 }]
+
+    :all-kybs [  ;; all keyboards
+        {:vendor_id 1452}
+        {:vendor_id 1278}
+        {:vendor_id 1241}
+        {:vendor_id 22871}
+    ]
+
+    :except-keyball [
+        {:vendor_id 1452}
+        {:vendor_id 1278}
+        {:vendor_id 1241}
+    ]
+
+} ;; devices
+
+:applications {
+    :slack ["^com.tinyspeck.slackmacgap$"]
+} ;; applications
+
+;; you can create templates for running shell commands. These follow clojure string template syntax.
+:templates {
+    :open-app "open -a \"%s\""
+    :open "open \"%s\""
+    :yabai "/opt/homebrew/bin/yabai %s"
+    :shell "zsh -c \"%s\""
+} ;; templates
+
+;; layers are modifier keys
+:simlayer-threshold 400
+:simlayers {
+    :launch-mode { :key :o }
+    :yabai-mode { :key :y }
+    :yabai-wm-mode { :key :w }
+    :arrow-mode { :key :f :modi {:optional [:any]}}
+    :number-mode { :key :right_command }
+} ;; layers
+
+;; with tos you can predefine 'to' keypresses to easily parse them
+:tos {
+    :repeat_space {:key :spacebar :repeat true}
+    :lazy_left_command {:key :left_command :lazy true}
+    :hold_quit {:key :!Cq :repeat false}
+}
+
+;; This is where you define the modifications
+:main [
+    {
+        :des "launch mode: quick launch applications"
+        :rules [
+            :launch-mode
+                [:t [:open-app "WezTerm"]]
+                [:f [:open "$HOME/Downloads"]]
+                [:s [:open-app "Slack"]]
+                [:g [:open-app "Vivaldi"]]
+                [:c [:open-app "Calendar"]]
+                [:z [:open-app "Firefox"]]
+                [:a [:open-app "Obsidian"]]
+                [:x [:open-app "KeepassXC"]]
+
+                [:q [:open-app "ChatGPT"]]
+        ]
+    }
+
+    {
+        :des "f to arrow mode"
+        :rules [
+            :arrow-mode
+                [:##h :##left_arrow]
+                [:##j :##down_arrow]
+                [:##k :##up_arrow]
+                [:##l :##right_arrow]
+        ]
+    }
+
+    {
+        :des "right_command to number mode"
+        :rules [
+            :number-mode
+                [:a :1]
+                [:s :2]
+                [:d :3]
+                [:f :4]
+                [:g :5]
+                [:h :6]
+                [:j :7]
+                [:k :8]
+                [:l :9]
+                [:semicolon :0]
+                [:q :!S1]
+                [:w :!S2]
+                [:e :!S3]
+                [:r :!S4]
+                [:t :!S5]
+                [:y :!S6]
+                [:u :!S7]
+                [:i :!S8]
+                [:o :!S9]
+                [:p :!S0]
+                [:n :open_bracket]
+                [:m :close_bracket]
+                [:comma :!Sopen_bracket]
+                [:period :!Sclose_bracket]
+        ]
+    }
+    
+    {
+        :des "simple_modification"
+        :rules [
+            :all-kybs
+                [:##escape :##grave_accent_and_tilde]
+            :hhkb-bt
+                [:grave_accent_and_tilde :delete_or_backspace]
+                [:right_option :caps_lock]
+            :apple-us
+                [:caps_lock :right_control nil {:alone :escape}]
+                [:left_control :left_option]
+                [:right_option :caps_lock]
+                [:right_shift :fn]
+                [:!To :japanese_eisuu [:input_source "ja"]]  ;; C-o for 英数 when Japanese input
+                [:!Tj :japanese_kana [:input_source "en"]]  ;; C-j for かな when English input
+            :apple-jis
+                [:international3 :backslash]
+                [:right_shift :fn]
+            :barocco
+                [:right_control :caps_lock]
+                [:right_option :right_command]
+                [:up_arrow :fn]
+        ]
+    }
+
+
+    {
+        :des "Change spacebar to left_shift. (Post spacebar if pressed alone)"
+        :rules [
+            [:spacebar :left_shift nil {:alone :spacebar :held :repeat_space :params {:held 800}}]
+        ]
+    }
+
+
+
+
+    {
+        :des "Quit application by holding command-q"
+        :rules [
+            [:!Cq nil nil {:held :hold_quit}]
+        ]
+    }
+
+    {
+        :des "Map fn + i, o, p  to F13, F14, F15."
+        :rules [
+            [:!Fi :f13]
+            [:!Fo :f14]
+            [:!Fp :f15]
+        ]
+    }
+
+    {
+        :des "Map fn + asd to Volume down/up/mute)"
+        :rules [
+            [:!Fa :volume_decrement]
+            [:!Fs :volume_increment]
+            [:!Fd :mute]
+        ]
+    }
+
+    {
+        :des "Disable annoying shortcut"
+        :rules [
+            [:!Ch []] ;; Hide other applications
+            [:!Cm []] ;; Minimize window
+            [:##caps_lock :escape]
+            [:!CSr [] :slack] ;; Reload
+        ]
+    }
+
+
+    {
+        :des "Yabai"
+        :rules [
+            :yabai-mode
+                [:b [:yabai "-m space --balance"]]
+                [:r [:shell "$HOME/.config/yabai/cycle_clockwise.sh"]]
+                [:f [:shell "yabai -m window --toggle float && yabai -m window --grid 10:10:2:1:6:7"]]
+                [:z [:yabai "-m window --toggle zoom-fullscreen"]]
+                [:a [:shell "bun run $HOME/.config/yabai/arrange.ts -w 20"]]
+                [:1 [:yabai "-m window --space 1 --focus"]]
+                [:2 [:yabai "-m window --space 2 --focus"]]
+                [:3 [:yabai "-m window --space 3 --focus"]]
+                [:4 [:yabai "-m window --space 4 --focus"]]
+                [:5 [:yabai "-m window --space 5 --focus"]]
+            :yabai-wm-mode
+                [:h [:yabai "-m window --resize left:-20:0"]]
+                [:j [:yabai "-m window --resize bottom:0:20"]]
+                [:k [:yabai "-m window --resize top:0:-20"]]
+                [:l [:yabai "-m window --resize right:20:0"]]
+                [:left_arrow [:shell "bun run $HOME/.config/yabai/arrange.ts --position left"]]
+                [:!Sleft_arrow [:shell "bun run $HOME/.config/yabai/arrange.ts --position left --overwrap 20"]]
+                [:down_arrow [:yabai "-m window --warp south"]]
+                [:up_arrow [:shell "bun run $HOME/.config/yabai/arrange.ts --full"]]
+                [:right_arrow [:shell "bun run $HOME/.config/yabai/arrange.ts --position right"]]
+                [:!Sright_arrow [:shell "bun run $HOME/.config/yabai/arrange.ts --position right --overwrap 20"]]
+        ]
+    }
+
+]
+}
