@@ -1,0 +1,115 @@
+#!/usr/bin/env sh
+
+# necessary to load scripting-addition during startup on macOS Big Sur
+# *yabai --load-sa* is configured to run through sudo without a password
+sudo yabai --load-sa
+yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
+
+# mission-control desktop labels
+yabai -m space 1 --label code
+yabai -m space 2 --label web
+yabai -m space 3 --label social
+yabai -m space 4 --label Br
+yabai -m space 5 --label PsIl
+yabai -m space 6 --label PrAe
+yabai -m space 7 --label VM
+yabai -m space 8 --label games
+
+# window rules
+yabai -m rule --add app="^Safari$" space=web
+yabai -m rule --add app="^Brave Browser$" space=web
+yabai -m rule --add app="^Transmission$" space=media
+yabai -m rule --add app="^Spotify$" space=media
+yabai -m rule --add app="^Discord$ " space=social grid=1:1:0:0:1:1 manage=off
+yabai -m rule --add app="^LINE$" manage=off
+yabai -m rule --add app="^LINE$" space=social manage=off
+yabai -m rule --add app="^Steam$" space=games manage=off
+yabai -m rule --add app="^(Calculator|System Preferences|Archive Utility|システム設定)$" manage=off
+yabai -m rule --add app="^(Karabiner-Elements)$" manage=off
+yabai -m rule --add app="^AEJeuce" manage=off
+yabai -m rule --add app="^mpv$" manage=off border=off sticky=on layer=above opacity=1.0 grid=8:8:6:0:2:2
+
+
+# Adobe Photoshop 全体を管理外＋フロートに
+yabai -m rule --add app="^Adobe Photoshop.*" manage=off
+yabai -m rule --add app="^Adobe Illustrator.*" manage=off
+yabai -m rule --add app="^Adobe After Effects.*" manage=off
+
+# カラーピッカーが開かれた瞬間に float にする（手動toggleの自動化）
+yabai -m signal --add event=window_focused app="^Adobe.*" title=".*カラーピッカー.*" action="yabai -m window --toggle float"
+s
+
+yabai -m rule --add app="^1Password$" manage=off
+yabai -m rule --add app="^UTM$" manage=off
+yabai -m rule --add app="^Preview$" manage=off opacity=1.0
+yabai -m rule --add app="^com.apple.Stickies$" manage=off
+yabai -m rule --add app="スティッキーズ" manage=off
+
+
+
+# signals
+yabai -m signal --add event=window_destroyed active=yes action="yabai -m query --windows --window &> /dev/null || yabai -m window --focus mouse &> /dev/null || yabai -m window --focus \$(yabai -m query --windows --space | jq .[0].id) &> /dev/null"
+yabai -m signal --add event=window_minimized active=yes action="if \$(yabai -m query --windows --window \$YABAI_WINDOW_ID | jq -r '.\"is-floating\"'); then yabai -m query --windows --window &> /dev/null || yabai -m window --focus mouse &> /dev/null || yabai -m window --focus \$(yabai -m query --windows --space | jq .[0].id) &> /dev/null; fi"
+
+yabai -m signal --add event=window_created app="com.apple.Stickies" action="yabai -m window --layer above"
+yabai -m signal --add event=window_created app="スティッキーズ" action="yabai -m window --layer above"
+yabai -m signal --add event=window_created app="LINE" action="yabai -m window --layer normal"
+yabai -m signal --add event=window_created app="Preview" action="yabai -m window --layer normal opacity=1.0"
+
+yabai -m config mouse_follows_focus off
+
+# specific space settings
+yabai -m config --space mail  layout stack
+yabai -m config --space social layout float
+
+
+# simple-bar-server
+yabai -m signal --add event=window_focused action="curl http://localhost:7776/yabai/spaces/refresh && curl http://localhost:7776/yabai/windows/refresh" label="Refresh simple-bar spaces & windows when focused application changes"
+yabai -m signal --add event=window_resized action="curl http://localhost:7776/yabai/spaces/refresh && curl http://localhost:7776/yabai/windows/refresh" label="Refresh simple-bar spaces & windows when a window is resized"
+yabai -m signal --add event=window_destroyed action="curl http://localhost:7776/yabai/spaces/refresh && curl http://localhost:7776/yabai/windows/refresh" label="Refresh simple-ba spaces & windows when an application window is closed"
+yabai -m signal --add event=space_changed action="curl http://localhost:7776/yabai/spaces/refresh && curl http://localhost:7776/yabai/windows/refresh" label="Refresh simple-bar spaces & windows on space change"
+yabai -m signal --add event=display_changed action="curl http://localhost:7776/yabai/spaces/refresh && curl http://localhost:7776/yabai/windows/refresh" label="Refresh simple-bar spaces & windows on display focus change"
+yabai -m signal --add event=window_title_changed action="curl http://localhost:7776/yabai/spaces/refresh && curl http://localhost:7776/yabai/windows/refresh" label="Refresh simple-bar spaces & windows when current window title changes"
+yabai -m signal --add event=space_destroyed action="curl http://localhost:7776/yabai/spaces/refresh && curl http://localhost:7776/yabai/windows/refresh" label="Refresh simple-bar spaces & windows on space removal"
+yabai -m signal --add event=space_created action="curl http://localhost:7776/yabai/spaces/refresh && curl http://localhost:7776/yabai/windows/refresh" label="Refresh simple-bar spaces & windows on space creation"
+yabai -m signal --add event=application_activated action="curl http://localhost:7776/yabai/spaces/refresh && curl http://localhost:7776/yabai/windows/refresh" label="Refresh simple-bar spaces & windows when application is activated"
+yabai -m signal --add event=display_added action="curl http://localhost:7776/yabai/displays/refresh" label="Refresh simple-bar displays when a new dispay is added"
+yabai -m signal --add event=display_removed action="curl http://localhost:7776/yabai/displays/refresh" label="Refresh simple-bar displays when a dispay is removed"
+yabai -m signal --add event=display_moved action="curl http://localhost:7776/yabai/displays/refresh" label="Refresh simple-bar displays when a dispay is moved"
+
+# global settings
+yabai -m config                              \
+    external_bar                off:41:0     \
+    mouse_follows_focus         on           \
+    focus_follows_mouse         autoraise    \
+    window_placement            second_child \
+    window_topmost              off          \
+    window_shadow               off          \
+    window_animation_duration   0.25         \
+    window_opacity_duration     0.25         \
+    active_window_opacity       0.90         \
+    normal_window_opacity       0.70         \
+    window_opacity              on           \
+    insert_feedback_color       0xaad75f5f   \
+    active_window_border_color  0xBF775759   \
+    normal_window_border_color  0x7f353535   \
+    window_border_width         4            \
+    window_border_radius        12           \
+    window_border_blur          on           \
+    window_border_hidpi         on           \
+    window_border               on           \
+    split_ratio                 0.50         \
+    split_type                  auto         \
+    auto_balance                off          \
+    top_padding                 10           \
+    left_padding                10           \
+    right_padding               10           \
+    bottom_padding              10           \
+    window_gap                  10           \
+    layout                      bsp          \
+    mouse_modifier              fn           \
+    mouse_action1               move         \
+    mouse_action2               resize       \
+    mouse_drop_action           swap
+
+echo "yabai configuration loaded.."
