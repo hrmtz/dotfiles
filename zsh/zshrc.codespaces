@@ -1,7 +1,8 @@
 # GitHub Codespaces specific zsh config
 
 # Prefer tools commonly available in Codespaces
-alias ls='ls --color=auto'
+# Use common lsd alias from zshrc.common if available.
+# alias ls='ls --color=auto'
 
 # Ensure local bin is on PATH
 export PATH="$HOME/.local/bin:$PATH"
