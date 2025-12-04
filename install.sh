@@ -1,62 +1,92 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Dotfiles repo root (this script is assumed to live here)
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Prefer zsh if available
-if command -v zsh >/dev/null 2>&1; then
-  ZSH_PATH="$(command -v zsh)"
-  # Set login shell for current user when possible (may fail in Codespaces, so ignore errors)
-  chsh -s "$ZSH_PATH" "${USER:-vscode}" 2>/dev/null || true
-fi
+info()  { printf "[dotfiles] %s\n" "$*"; }
+warn()  { printf "[dotfiles][WARN] %s\n" "$*" >&2; }
+error() { printf "[dotfiles][ERROR] %s\n" "$*" >&2; exit 1; }
 
-# Symlink zsh config
-if [ -f "$DOTFILES_DIR/.zshrc" ]; then
-  ln -sf "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
-fi
+link() {
+  local src="$1" dst="$2"
 
-if [ -f "$DOTFILES_DIR/.p10k.zsh" ]; then
-  ln -sf "$DOTFILES_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
-fi
+  mkdir -p "$(dirname "$dst")"
 
-# Ensure bash also hands off to zsh when interactive
-BASHRC_PATH="$HOME/.bashrc"
+  if [ -L "$dst" ] || [ -f "$dst" ] || [ -d "$dst" ]; then
+    if [ "${DOTFILES_FORCE:-0}" != "1" ]; then
+      warn "skip existing: $dst (set DOTFILES_FORCE=1 to overwrite)"
+      return
+    fi
+    rm -rf "$dst"
+  fi
 
-if ! grep -q "exec \"\$SHELL\" -l" "$BASHRC_PATH" 2>/dev/null; then
-  cat >> "$BASHRC_PATH" <<'EOF'
-# --- auto-switch to zsh when available (installed via dotfiles) ---
-if [ -t 1 ] && command -v zsh >/dev/null 2>&1; then
-  export SHELL="$(command -v zsh)"
-  exec "$SHELL" -l
-fi
-EOF
-fi
+  ln -s "$src" "$dst"
+  info "linked: $dst -> $src"
+}
 
-# --- oh-my-zsh / powerlevel10k / zsh-completions setup ---
+detect_platform() {
+  if [ -n "${CODESPACES:-}" ]; then
+    echo "codespaces"
+  elif [ "${OSTYPE:-}" = darwin* ] || [ "$(uname -s 2>/dev/null || echo unknown)" = "Darwin" ]; then
+    echo "macos"
+  else
+    echo "linux"
+  fi
+}
 
-# oh-my-zsh
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
-  export RUNZSH=no
-  export CHSH=no
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-fi
+main() {
+  info "dotfiles install start (DIR=$DOTFILES_DIR)"
 
-# powerlevel10k theme
-if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
-  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
-    "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
-fi
+  # Ensure we are used as ~/.dotfiles when possible
+  if [ "${HOME:-}" != "$DOTFILES_DIR" ]; then
+    if [ ! -e "$HOME/.dotfiles" ]; then
+      ln -s "$DOTFILES_DIR" "$HOME/.dotfiles"
+      info "linked: $HOME/.dotfiles -> $DOTFILES_DIR"
+    fi
+  fi
 
-# zsh-completions plugin
-if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-completions" ]; then
-  git clone https://github.com/zsh-users/zsh-completions \
-    "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-completions"
-fi
+  # zsh / p10k entrypoints
+  link "$DOTFILES_DIR/zsh/zshrc"      "$HOME/.zshrc"
+  link "$DOTFILES_DIR/zsh/zprofile"   "$HOME/.zprofile"
+  link "$DOTFILES_DIR/.p10k.zsh"      "$HOME/.p10k.zsh"
+  link "$DOTFILES_DIR/zsh"            "$HOME/.zsh"
 
-if command -v apt >/dev/null 2>&1; then
-  sudo apt-get update -y
-  sudo apt-get install -y fzf fd-find ripgrep
-  command -v lsd >/dev/null 2>&1 || sudo apt-get install -y lsd
-  command -v bat >/dev/null 2>&1 || sudo apt-get install -y bat
-fi
+  # git
+  [ -f "$DOTFILES_DIR/git/gitconfig" ]  && link "$DOTFILES_DIR/git/gitconfig"  "$HOME/.gitconfig"
+  [ -f "$DOTFILES_DIR/git/gitignore" ]  && link "$DOTFILES_DIR/git/gitignore"  "$HOME/.gitignore"
+
+  # vim (optional)
+  if [ -d "$DOTFILES_DIR/vim" ]; then
+    link "$DOTFILES_DIR/vim/vimrc" "$HOME/.vimrc"
+    link "$DOTFILES_DIR/vim"        "$HOME/.vim"
+  fi
+
+  # Set default shell to zsh when available (best-effort)
+  if command -v zsh >/dev/null 2>&1; then
+    local zsh_path
+    zsh_path="$(command -v zsh)"
+    if [ "${SHELL:-}" != "$zsh_path" ]; then
+      chsh -s "$zsh_path" "${USER:-$(id -un)}" 2>/dev/null || warn "failed to chsh (non-fatal)"
+    fi
+  fi
+
+  # Platform-specific bootstrap (optional hooks)
+  local platform
+  platform="$(detect_platform)"
+  info "platform detected: $platform"
+
+  case "$platform" in
+    macos)
+      [ -x "$DOTFILES_DIR/scripts/macos-bootstrap.sh" ] && "$DOTFILES_DIR/scripts/macos-bootstrap.sh"
+      ;;
+    codespaces)
+      [ -x "$DOTFILES_DIR/scripts/codespaces-bootstrap.sh" ] && "$DOTFILES_DIR/scripts/codespaces-bootstrap.sh"
+      ;;
+    *)
+      ;;
+  esac
+
+  info "dotfiles install done"
+}
+
+main "$@"

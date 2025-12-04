@@ -1,0 +1,48 @@
+# macOS specific zsh config
+
+##### Homebrew / PATH 関連 #####
+if [[ -d /opt/homebrew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -d /usr/local/Homebrew ]]; then
+  eval "$(/usr/local/bin/brew shellenv 2>/dev/null || true)"
+fi
+
+# macOS で使う PATH の追加（mac-zshrc から移植）
+path=(
+  $HOME/.local/bin
+  /opt/homebrew/opt/python@3.12/bin
+  /opt/homebrew/opt/libtool/libexec/gnubin
+  /opt/homebrew/opt/openssl@3.2/bin
+  /opt/homebrew/opt/openjdk/bin
+  /opt/homebrew/opt/ruby/bin
+  /opt/homebrew/opt/curl/bin
+  /usr/local/sbin
+  /opt/homebrew/bin
+  $path
+)
+typeset -U path
+export PATH
+
+##### 言語ランタイムなど #####
+alias python3="/opt/homebrew/opt/python@3.12/bin/python3.12"
+alias pip3="/opt/homebrew/opt/python@3.12/bin/pip3.12"
+
+export LDFLAGS="-L/opt/homebrew/opt/openssl@3.2/lib -L/opt/homebrew/opt/ruby/lib -L/opt/homebrew/opt/curl/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/openssl@3.2/include -I/opt/homebrew/opt/openjdk/include -I/opt/homebrew/opt/ruby/include -I/opt/homebrew/opt/curl/include"
+export PKG_CONFIG_PATH="/opt/homebrew/opt/ruby/lib/pkgconfig:/opt/homebrew/opt/curl/lib/pkgconfig"
+export QUARTO_PYTHON="$HOME/.venv/quarto-python/bin/python"
+
+##### macOS 固有の補完・色など #####
+
+# Homebrew 補完（存在する場合のみ）
+if [ -f /opt/homebrew/share/zsh/site-functions/_brew_services ]; then
+  fpath=(/opt/homebrew/share/zsh/site-functions $fpath)
+fi
+
+# macOS-specific ls color
+alias ls='ls -G'
+
+# Adobe Bridge を開く alias
+alias bridge="open -a Adobe\ Bridge\ 2025"
+
+# Mac でだけ使いたい alias や環境変数はここに追加

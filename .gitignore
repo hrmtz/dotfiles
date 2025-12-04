@@ -1,0 +1,21 @@
+.ssh/
+*.pem
+*.key
+*.p12
+*.credentials
+
+# Shell histories / caches
+.zsh_history
+.zsh_history.*
+.zcompdump*
+.zcompcache/
+.cache/
+.lesshst
+.viminfo
+.sqlite_history
+python_history
+
+# Misc
+.DS_Store
+*.swp
+*.swo

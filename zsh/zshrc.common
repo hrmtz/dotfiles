@@ -1,0 +1,87 @@
+# Common zsh configuration (Mac + Codespaces)
+
+##### 基本オプション / ヒストリ #####
+HISTSIZE=5000
+SAVEHIST=5000
+HISTFILE=$HOME/.zsh_history
+
+setopt AUTO_CD
+setopt AUTO_MENU
+setopt AUTO_LIST
+setopt MENU_COMPLETE
+setopt CORRECT
+
+setopt HIST_IGNORE_ALL_DUPS
+setopt SHARE_HISTORY
+setopt INC_APPEND_HISTORY
+setopt EXTENDED_HISTORY
+
+##### 補完システム #####
+autoload -Uz compinit
+
+# zcompdump をホストごと・バージョンごとに分離
+if [[ ! -d $HOME/.zcompdump.d ]]; then
+  mkdir -p $HOME/.zcompdump.d
+fi
+ZSH_COMPDUMP=$HOME/.zcompdump.d/.zcompdump-$HOST-$ZSH_VERSION
+compinit -d $ZSH_COMPDUMP
+
+# ~/.zsh/completion を補完パスに追加
+if [ -d ~/.zsh/completion ]; then
+  fpath=(~/.zsh/completion $fpath)
+fi
+
+# docker 補完のオプション
+zstyle ':completion:*:*:docker:*' option-stacking yes
+zstyle ':completion:*:*:docker-*:*' option-stacking yes
+
+# 補完で小文字でも大文字にマッチ（＋曖昧マッチ強化）
+zstyle ':completion:*' matcher-list \
+  'm:{a-z}={A-Z}' \
+  'r:|[._-]=* r:|=*' \
+  'l:|=* r:|=*'
+
+zstyle ':completion:*' menu select
+zstyle ':completion:*' group-name ''
+
+##### キーバインド #####
+bindkey -e
+bindkey '^R' history-incremental-search-backward
+bindkey '^S' history-incremental-search-forward
+
+##### zinit / plugins / prompt #####
+if [[ ! -d ${HOME}/.zinit/bin ]]; then
+  mkdir -p "${HOME}/.zinit"
+  git clone https://github.com/zdharma-continuum/zinit.git "${HOME}/.zinit/bin"
+fi
+source "${HOME}/.zinit/bin/zinit.zsh"
+
+# Powerlevel10k 本体（テーマ）
+zinit ice depth=1
+zinit light romkatv/powerlevel10k
+
+# プラグイン
+zinit light zsh-users/zsh-completions
+zinit light zsh-users/zsh-autosuggestions
+zinit light zdharma-continuum/fast-syntax-highlighting
+
+# p10k 設定ファイル
+if [[ -r "$HOME/.p10k.zsh" ]]; then
+  source "$HOME/.p10k.zsh"
+fi
+
+##### 共通 alias / PATH #####
+alias ll='ls -la'
+alias gs='git status'
+
+# ls / cat のモダン代替（存在する場合のみ）
+if command -v lsd >/dev/null 2>&1; then
+  alias ls="lsd"
+  alias la="lsd --long --all --group"
+fi
+
+if command -v bat >/dev/null 2>&1; then
+  alias cat="bat"
+fi
+
+export PATH="$HOME/.local/bin:$PATH"
