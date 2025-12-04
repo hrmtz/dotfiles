@@ -1,0 +1,5 @@
+# Global gitignore managed via dotfiles
+*.log
+node_modules/
+.dist/
+.env*

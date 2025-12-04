@@ -1,0 +1,9 @@
+# GitHub Codespaces specific zsh config
+
+# Prefer tools commonly available in Codespaces
+alias ls='ls --color=auto'
+
+# Ensure local bin is on PATH
+export PATH="$HOME/.local/bin:$PATH"
+
+# Codespaces でだけ有効にしたい alias / 設定をここに追加

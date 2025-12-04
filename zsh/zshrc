@@ -1,0 +1,20 @@
+# Main zshrc entrypoint (managed in ~/.dotfiles)
+
+# Load common settings
+if [[ -f "$HOME/.dotfiles/zsh/zshrc.common" ]]; then
+  source "$HOME/.dotfiles/zsh/zshrc.common"
+fi
+
+# Environment-specific overrides
+if [[ -n "${CODESPACES:-}" ]]; then
+  if [[ -f "$HOME/.dotfiles/zsh/zshrc.codespaces" ]]; then
+    source "$HOME/.dotfiles/zsh/zshrc.codespaces"
+  fi
+else
+  # Assume macOS when OSTYPE matches, otherwise treat as generic linux
+  if [[ "$OSTYPE" == darwin* ]] && [[ -f "$HOME/.dotfiles/zsh/zshrc.macos" ]]; then
+    source "$HOME/.dotfiles/zsh/zshrc.macos"
+  elif [[ -f "$HOME/.dotfiles/zsh/zshrc.linux" ]]; then
+    source "$HOME/.dotfiles/zsh/zshrc.linux"
+  fi
+fi
