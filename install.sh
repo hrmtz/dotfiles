@@ -48,6 +48,7 @@ main() {
   # zsh / p10k entrypoints
   link "$DOTFILES_DIR/zsh/zshrc"      "$HOME/.zshrc"
   link "$DOTFILES_DIR/zsh/zprofile"   "$HOME/.zprofile"
+  # Default p10k (overridden per-platform below if needed)
   link "$DOTFILES_DIR/.p10k.zsh"      "$HOME/.p10k.zsh"
   link "$DOTFILES_DIR/zsh"            "$HOME/.zsh"
 
@@ -80,6 +81,10 @@ main() {
       [ -x "$DOTFILES_DIR/scripts/macos-bootstrap.sh" ] && "$DOTFILES_DIR/scripts/macos-bootstrap.sh"
       ;;
     codespaces)
+      # Override p10k config for Codespaces if a dedicated config exists.
+      if [ -f "$DOTFILES_DIR/.p10k.codespaces.zsh" ]; then
+	link "$DOTFILES_DIR/.p10k.codespaces.zsh" "$HOME/.p10k.zsh"
+      fi
       [ -x "$DOTFILES_DIR/scripts/codespaces-bootstrap.sh" ] && "$DOTFILES_DIR/scripts/codespaces-bootstrap.sh"
       ;;
     *)
