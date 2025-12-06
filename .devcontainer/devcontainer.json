@@ -1,0 +1,12 @@
+{
+  "name": "dotfiles-codespaces",
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "terminal.integrated.profiles.linux": {
+      "zsh": {
+        "path": "/bin/zsh"
+      }
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/postCreate.zsh-setup.sh"
+}
