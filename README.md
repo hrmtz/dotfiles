@@ -37,6 +37,7 @@
 - `scripts/`
   - `macos-bootstrap.sh` … macOS 用追加セットアップ
   - `codespaces-bootstrap.sh` … Codespaces 用追加セットアップ (VS Code 設定・CLI ツールなど)
+  - `apply-devcontainer.sh` … カレントプロジェクトに devcontainer テンプレートをコピーするヘルパー
 
 - `.vscode/`
   - `settings.codespaces.json` … Codespaces 用 VS Code 設定テンプレート  
@@ -115,6 +116,47 @@ bash install.sh
     (`jq -s '.[0] * .[1]'` で「既存設定 * テンプレ」の形でマージし、テンプレ側が優先)
   - `jq` が無い or `settings.json` が無い場合はテンプレをそのままコピー
   - 複数回実行しても壊れない idempotent な処理
+
+#### devcontainer テンプレートと zsh デフォルト化
+
+Codespaces で「毎回 bash ではなく zsh で統合ターミナルを開きたい」場合、
+各プロジェクトに devcontainer 設定を 1 度だけ置いておくと、その後は自動で zsh が使われる。
+
+- dotfiles 側テンプレート: `~/.dotfiles/.devcontainer/`
+  - `devcontainer.json`
+    - VS Code の `terminal.integrated.defaultProfile.linux` を `zsh` に設定
+    - `terminal.integrated.profiles.linux.zsh.path` を `/bin/zsh` に固定
+  - `postCreate.zsh-setup.sh`
+    - コンテナ内で zsh が無ければインストール
+    - `getent passwd "$USER"` からユーザー名と現在のシェルを取得し、`chsh` でログインシェルを zsh に変更
+    - 失敗しても非致命 (警告を出して続行)
+
+このテンプレートを実際のプロジェクトに適用するには、プロジェクトルートで次のどちらかを行う。
+
+1. 手動でコピーする場合:
+
+   ```bash
+   cd /workspaces/your-project
+   mkdir -p .devcontainer
+   cp ~/.dotfiles/.devcontainer/devcontainer.json .devcontainer/devcontainer.json
+   cp ~/.dotfiles/.devcontainer/postCreate.zsh-setup.sh .devcontainer/postCreate.zsh-setup.sh
+   chmod +x .devcontainer/postCreate.zsh-setup.sh
+   ```
+
+2. ヘルパースクリプトを使う場合 (`scripts/apply-devcontainer.sh`):
+
+   ```bash
+   cd /workspaces/your-project
+   ~/.dotfiles/scripts/apply-devcontainer.sh
+   ```
+
+その後、VS Code の「Reopen in Container」または「Rebuild Container」を実行すると、
+そのプロジェクトでは:
+
+- コンテナユーザーのログインシェルが zsh に変更される
+- VS Code 統合ターミナルも `/bin/zsh` で起動する
+
+という状態になり、同じリポジトリの Codespaces を作り直しても毎回自動で zsh が使われる。
 
 ---
 
