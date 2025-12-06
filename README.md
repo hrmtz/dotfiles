@@ -106,6 +106,10 @@ bash install.sh
    - `.p10k.codespaces.zsh` があれば、`~/.p10k.zsh` をそれに差し替える  
      → Codespaces では専用の p10k テーマが使われる
    - `scripts/codespaces-bootstrap.sh` を実行
+   - VS Code Remote の Machine settings (`~/.vscode-remote/data/Machine/settings.json` や
+     `~/.vscode-server/data/Machine/settings.json`) に対して、Python 経由で
+     `terminal.integrated.profiles.linux.zsh.path = "/bin/zsh"` および
+     `terminal.integrated.defaultProfile.linux = "zsh"` をマージして書き込む
 
 #### `scripts/codespaces-bootstrap.sh` の役割
 
