@@ -102,6 +102,23 @@ main() {
       ;;
   esac
 
+  if [ "$platform" = "codespaces" ]; then
+    # 既存の Codespaces 用処理（p10k 差し替えや codespaces-bootstrap.sh）…
+
+    cat <<'EOF'
+
+[dotfiles] Codespaces で zsh を devcontainer 経由で完全に使うには、
+各プロジェクトで一度だけ次を実行してください:
+
+  cd /workspaces/your-project
+  ~/.dotfiles/scripts/apply-devcontainer.sh
+
+その後 VS Code で「Reopen in Container / Rebuild Container」を実行すると、
+そのリポジトリでは以後ずっと zsh で統合ターミナルが開くようになります。
+
+EOF
+  fi
+
   info "dotfiles install done"
 }
 
