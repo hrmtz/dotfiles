@@ -7,6 +7,11 @@ info()  { printf "[dotfiles] %s\n" "$*"; }
 warn()  { printf "[dotfiles][WARN] %s\n" "$*" >&2; }
 error() { printf "[dotfiles][ERROR] %s\n" "$*" >&2; exit 1; }
 
+# In Codespaces, default to force-overwrite unless the caller overrides DOTFILES_FORCE.
+if [ -n "${CODESPACES:-}" ] && [ -z "${DOTFILES_FORCE:-}" ]; then
+  DOTFILES_FORCE=1
+fi
+
 link() {
   local src="$1" dst="$2"
 
