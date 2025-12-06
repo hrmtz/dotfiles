@@ -39,6 +39,89 @@ detect_platform() {
   fi
 }
 
+ensure_zsh_for_codespaces() {
+  local zsh_path=""
+
+  if [ -x "/bin/zsh" ]; then
+    zsh_path="/bin/zsh"
+  elif [ -x "/usr/bin/zsh" ]; then
+    zsh_path="/usr/bin/zsh"
+  elif command -v zsh >/dev/null 2>&1; then
+    zsh_path="$(command -v zsh)"
+  else
+    info "zsh not found; installing via apt-get (Codespaces)"
+    if command -v apt-get >/dev/null 2>&1; then
+      sudo apt-get update -y || warn "apt-get update failed (non-fatal)"
+      sudo apt-get install -y zsh || warn "apt-get install zsh failed (non-fatal)"
+      if command -v zsh >/dev/null 2>&1; then
+        zsh_path="$(command -v zsh)"
+      fi
+    else
+      warn "apt-get not available; cannot auto-install zsh"
+    fi
+  fi
+
+  if [ -z "$zsh_path" ]; then
+    warn "zsh path could not be determined; skipping chsh"
+  fi
+
+  printf '%s\n' "$zsh_path"
+}
+
+set_login_shell_for_vscode() {
+  local zsh_path="$1"
+  [ -z "$zsh_path" ] && return 0
+
+  local target_user="vscode"
+  if ! getent passwd "$target_user" >/dev/null 2>&1; then
+    target_user="${USER:-$target_user}"
+  fi
+
+  local passwd_entry
+  passwd_entry="$(getent passwd "$target_user" || true)"
+  if [ -z "$passwd_entry" ]; then
+    warn "user '$target_user' not found; skipping chsh"
+    return 0
+  fi
+
+  local current_shell
+  current_shell="$(printf '%s\n' "$passwd_entry" | cut -d: -f7)"
+  if [ "$current_shell" = "$zsh_path" ]; then
+    info "login shell for $target_user is already $zsh_path; no change"
+    return 0
+  fi
+
+  info "changing login shell for $target_user: $current_shell -> $zsh_path"
+  sudo chsh -s "$zsh_path" "$target_user" || warn "chsh failed for $target_user (non-fatal)"
+}
+
+run_apply_devcontainer_if_exists() {
+  local candidates=(
+    "$HOME/.dotfiles/scripts/apply-devcontainer.sh"
+    "$DOTFILES_DIR/scripts/apply-devcontainer.sh"
+    "$HOME/apply-devcontainer.sh"
+    "./apply-devcontainer.sh"
+  )
+
+  local script=""
+  for c in "${candidates[@]}"; do
+    if [ -x "$c" ]; then
+      script="$c"
+      break
+    fi
+  done
+
+  if [ -z "$script" ]; then
+    warn "apply-devcontainer.sh not found; skip devcontainer template apply"
+    return 0
+  fi
+
+  info "running devcontainer apply script: $script"
+  if ! "$script"; then
+    warn "apply-devcontainer.sh exited with non-zero status (non-fatal)"
+  fi
+}
+
 main() {
   info "dotfiles install start (DIR=$DOTFILES_DIR)"
 
@@ -97,27 +180,16 @@ main() {
 	link "$DOTFILES_DIR/.p10k.codespaces.zsh" "$HOME/.p10k.zsh"
       fi
       [ -x "$DOTFILES_DIR/scripts/codespaces-bootstrap.sh" ] && "$DOTFILES_DIR/scripts/codespaces-bootstrap.sh"
+
+	# Ensure zsh is available and set as login shell for Codespaces user
+	local zsh_path
+	zsh_path="$(ensure_zsh_for_codespaces)"
+	set_login_shell_for_vscode "$zsh_path"
+	run_apply_devcontainer_if_exists
       ;;
     *)
       ;;
   esac
-
-  if [ "$platform" = "codespaces" ]; then
-    # 既存の Codespaces 用処理（p10k 差し替えや codespaces-bootstrap.sh）…
-
-    cat <<'EOF'
-
-[dotfiles] Codespaces で zsh を devcontainer 経由で完全に使うには、
-各プロジェクトで一度だけ次を実行してください:
-
-  cd /workspaces/your-project
-  ~/.dotfiles/scripts/apply-devcontainer.sh
-
-その後 VS Code で「Reopen in Container / Rebuild Container」を実行すると、
-そのリポジトリでは以後ずっと zsh で統合ターミナルが開くようになります。
-
-EOF
-  fi
 
   info "dotfiles install done"
 }
