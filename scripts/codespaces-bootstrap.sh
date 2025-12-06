@@ -4,8 +4,9 @@ set -euo pipefail
 # Minimal bootstrap for Codespaces; extend as needed
 
 if command -v apt >/dev/null 2>&1; then
-  sudo apt-get update -y
-  sudo apt-get install -y fzf fd-find ripgrep lsd
+  echo "[codespaces-bootstrap] apt-based environment detected; installing CLI tools (best-effort)..."
+  sudo apt-get update -y || echo "[codespaces-bootstrap][WARN] apt-get update failed (continuing)"
+  sudo apt-get install -y fzf fd-find ripgrep lsd || echo "[codespaces-bootstrap][WARN] apt-get install failed (continuing)"
 fi
 
 # Ensure VS Code settings for integrated terminal (zsh on Linux)
