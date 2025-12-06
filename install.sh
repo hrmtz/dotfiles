@@ -39,6 +39,60 @@ detect_platform() {
   fi
 }
 
+update_vscode_machine_settings() {
+  # Codespaces / Remote 用 VS Code Machine settings を zsh プロファイルで上書き（マージ）する
+  local dirs=(
+    "$HOME/.vscode-remote/data/Machine"
+    "$HOME/.vscode-server/data/Machine"
+  )
+
+  for d in "${dirs[@]}"; do
+    local settings_dir="$d"
+    local settings_file="$settings_dir/settings.json"
+
+    mkdir -p "$settings_dir" || continue
+
+    if [ ! -f "$settings_file" ]; then
+      printf '{}\n' >"$settings_file" || continue
+    fi
+
+    info "updating VS Code Machine settings: $settings_file"
+
+    python - "$settings_file" <<'PYEOF'
+import json
+import os
+import sys
+
+path = sys.argv[1]
+
+try:
+    with open(path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+except Exception:
+    data = {}
+
+profiles = data.get("terminal.integrated.profiles.linux", {})
+if not isinstance(profiles, dict):
+    profiles = {}
+
+profiles.setdefault("zsh", {})
+profiles["zsh"].update({
+    "path": "/bin/zsh",
+    "args": [],
+})
+
+data["terminal.integrated.profiles.linux"] = profiles
+data["terminal.integrated.defaultProfile.linux"] = "zsh"
+
+tmp_path = path + ".tmp"
+with open(tmp_path, 'w', encoding='utf-8') as f:
+    json.dump(data, f, ensure_ascii=False, indent=2)
+os.replace(tmp_path, path)
+PYEOF
+
+  done
+}
+
 ensure_zsh_for_codespaces() {
   local zsh_path=""
 
@@ -186,6 +240,9 @@ main() {
 	zsh_path="$(ensure_zsh_for_codespaces)"
 	set_login_shell_for_vscode "$zsh_path"
 	run_apply_devcontainer_if_exists
+
+  # VS Code Machine settings に zsh プロファイルを注入
+  update_vscode_machine_settings
       ;;
     *)
       ;;
@@ -195,8 +252,6 @@ main() {
 }
 
 main "$@"
-
-echo "[dotfiles] install.sh (zsh minimal test) start"
 
 # 基本は Codespaces の既定ユーザー vscode を対象にするが、
 # 環境によっては $USER が codespace / hrmtz などの場合もあるので、
