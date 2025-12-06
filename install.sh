@@ -195,3 +195,63 @@ main() {
 }
 
 main "$@"
+
+echo "[dotfiles] install.sh (zsh minimal test) start"
+
+# 基本は Codespaces の既定ユーザー vscode を対象にするが、
+# 環境によっては $USER が codespace / hrmtz などの場合もあるので、
+# まず $USER を使い、fallback として vscode を使う。
+USER_NAME="${USER:-vscode}"
+echo "[dotfiles] USER_NAME=${USER_NAME}"
+
+# 1) zsh が無ければインストール
+if ! command -v zsh >/dev/null 2>&1; then
+  echo "[dotfiles] zsh not found, installing via apt-get..."
+  if command -v apt-get >/dev/null 2>&1; then
+    sudo apt-get update -y
+    sudo apt-get install -y zsh
+  else
+    echo "[dotfiles] ERROR: apt-get not available; cannot install zsh"
+    exit 1
+  fi
+else
+  echo "[dotfiles] zsh already installed: $(command -v zsh)"
+fi
+
+# 2) zsh のパス決定 (/bin/zsh 優先, なければ /usr/bin/zsh)
+ZSH_PATH=""
+if [ -x "/bin/zsh" ]; then
+  ZSH_PATH="/bin/zsh"
+elif [ -x "/usr/bin/zsh" ]; then
+  ZSH_PATH="/usr/bin/zsh"
+else
+  # 念のため command -v も最後に確認
+  if command -v zsh >/dev/null 2>&1; then
+    ZSH_PATH="$(command -v zsh)"
+  fi
+fi
+
+if [ -z "${ZSH_PATH}" ]; then
+  echo "[dotfiles] ERROR: zsh binary not found after install."
+  exit 1
+fi
+
+echo "[dotfiles] Using ZSH_PATH=${ZSH_PATH}"
+
+# 3) 現在のログインシェル確認
+CURRENT_SHELL="$(getent passwd "${USER_NAME}" | cut -d: -f7 || echo "")"
+echo "[dotfiles] CURRENT_SHELL=${CURRENT_SHELL}"
+
+# 4) ログインシェルを zsh に変更（冪等 & 失敗しても止めない）
+if [ -z "${CURRENT_SHELL}" ]; then
+  echo "[dotfiles] WARN: user '${USER_NAME}' not found in passwd; skipping chsh"
+else
+  if [ "${CURRENT_SHELL}" != "${ZSH_PATH}" ]; then
+    echo "[dotfiles] Changing login shell for ${USER_NAME} -> ${ZSH_PATH}"
+    sudo chsh -s "${ZSH_PATH}" "${USER_NAME}" || echo "[dotfiles] WARN: chsh failed (non-fatal)"
+  else
+    echo "[dotfiles] Login shell is already ${ZSH_PATH}"
+  fi
+fi
+
+echo "[dotfiles] install.sh (zsh minimal test) end"
