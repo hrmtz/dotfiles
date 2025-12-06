@@ -163,6 +163,33 @@ set_login_shell_for_vscode() {
   sudo chsh -s "$zsh_path" "$target_user" || warn "chsh failed for $target_user (non-fatal)"
 }
 
+run_apply_devcontainer_if_exists() {
+  local candidates=(
+    "$HOME/.dotfiles/scripts/apply-devcontainer.sh"
+    "$DOTFILES_DIR/scripts/apply-devcontainer.sh"
+    "$HOME/apply-devcontainer.sh"
+    "./apply-devcontainer.sh"
+  )
+
+  local script=""
+  for c in "${candidates[@]}"; do
+    if [ -x "$c" ]; then
+      script="$c"
+      break
+    fi
+  done
+
+  if [ -z "$script" ]; then
+    warn "apply-devcontainer.sh not found; skip devcontainer template apply"
+    return 0
+  fi
+
+  info "running devcontainer apply script: $script"
+  if ! "$script"; then
+    warn "apply-devcontainer.sh exited with non-zero status (non-fatal)"
+  fi
+}
+
 main() {
   info "dotfiles install start (DIR=$DOTFILES_DIR)"
 
