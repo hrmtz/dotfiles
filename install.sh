@@ -72,10 +72,13 @@ main() {
 
   # Set default shell to zsh when available (best-effort)
   if command -v zsh >/dev/null 2>&1; then
-    local zsh_path
-    zsh_path="$(command -v zsh)"
-    if [ "${SHELL:-}" != "$zsh_path" ]; then
-      chsh -s "$zsh_path" "${USER:-$(id -un)}" 2>/dev/null || warn "failed to chsh (non-fatal)"
+    # Codespaces では chsh しない（devcontainer 側で制御されているため）
+    if [ -z "${CODESPACES:-}" ]; then
+      local zsh_path
+      zsh_path="$(command -v zsh)"
+      if [ "${SHELL:-}" != "$zsh_path" ]; then
+        chsh -s "$zsh_path" "${USER:-$(id -un)}" 2>/dev/null || warn "failed to chsh (non-fatal)"
+      fi
     fi
   fi
 
