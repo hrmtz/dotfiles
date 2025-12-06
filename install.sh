@@ -61,10 +61,13 @@ main() {
   [ -f "$DOTFILES_DIR/git/gitconfig" ]  && link "$DOTFILES_DIR/git/gitconfig"  "$HOME/.gitconfig"
   [ -f "$DOTFILES_DIR/git/gitignore" ]  && link "$DOTFILES_DIR/git/gitignore"  "$HOME/.gitignore"
 
-  # vim (optional)
-  if [ -d "$DOTFILES_DIR/vim" ]; then
+  # vim (optional) — Codespaces では重い/不要ならスキップする
+  local platform_for_vim
+  platform_for_vim="$(detect_platform)"
+
+  if [ "$platform_for_vim" != "codespaces" ] && [ -d "$DOTFILES_DIR/vim" ]; then
     link "$DOTFILES_DIR/vim/vimrc" "$HOME/.vimrc"
-    link "$DOTFILES_DIR/vim"        "$HOME/.vim"
+    link "$DOTFILES_DIR/vim"       "$HOME/.vim"
   fi
 
   # Set default shell to zsh when available (best-effort)
