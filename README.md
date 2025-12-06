@@ -37,7 +37,6 @@
 - `scripts/`
   - `macos-bootstrap.sh` … macOS 用追加セットアップ
   - `codespaces-bootstrap.sh` … Codespaces 用追加セットアップ (VS Code 設定・CLI ツールなど)
-  - `apply-devcontainer.sh` … カレントプロジェクトに devcontainer テンプレートをコピーするヘルパー
 
 - `.vscode/`
   - `settings.codespaces.json` … Codespaces 用 VS Code 設定テンプレート  
