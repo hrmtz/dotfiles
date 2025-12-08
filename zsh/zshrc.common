@@ -64,6 +64,7 @@ zinit light romkatv/powerlevel10k
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light zdharma-continuum/fast-syntax-highlighting
+zinit light MichaelAquilina/zsh-you-should-use
 
 # p10k 設定ファイル（環境ごとに読み分け）
 if [[ -n "${CODESPACES:-}" ]] && [[ -r "$HOME/.p10k.codespaces.zsh" ]]; then
