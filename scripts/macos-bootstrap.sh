@@ -52,10 +52,13 @@ main() {
     fi
   done
 
-  dotfiles_link "$dotfiles_dir/.config/karabiner.edn" "$home_dir/.config/karabiner.edn"
-  dotfiles_link "$dotfiles_dir/.config/skhd/skhdrc"   "$home_dir/.config/skhd/skhdrc"
-  dotfiles_link "$dotfiles_dir/.config/yabai/yabairc" "$home_dir/.config/yabai/yabairc"
+  dotfiles_link "$dotfiles_dir/.config/karabiner.edn"       "$home_dir/.config/karabiner.edn"
+  dotfiles_link "$dotfiles_dir/.config/skhd/skhdrc"         "$home_dir/.config/skhd/skhdrc"
+  dotfiles_link "$dotfiles_dir/.config/yabai/yabairc"       "$home_dir/.config/yabai/yabairc"
   dotfiles_link "$dotfiles_dir/.config/wezterm/wezterm.lua" "$home_dir/.config/wezterm/wezterm.lua"
+
+  # Hammerspoon (top-level dotdir)
+  dotfiles_link "$dotfiles_dir/.hammerspoon" "$home_dir/.hammerspoon"
 
   info "macOS bootstrap done"
 }

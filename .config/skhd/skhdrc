@@ -141,3 +141,4 @@ alt - g : yabai -m space --mirror x-axis
 # (2022-10-11 21:24)
 ctrl + alt + cmd - r : launchctl kickstart -k "gui/${UID}/homebrew.mxcl.yabai"
 
+cmd + alt - return : open -n -a WezTerm --args --class WezTermQuake --position top --height 0.35
