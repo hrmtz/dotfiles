@@ -40,7 +40,7 @@ if [ -f /opt/homebrew/share/zsh/site-functions/_brew_services ]; then
 fi
 
 # macOS-specific ls color
-alias ls='ls -G'
+alias ls='lsd'
 
 # Adobe Bridge を開く alias
 alias bridge="open -a Adobe\ Bridge\ 2025"
