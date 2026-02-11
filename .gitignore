@@ -19,3 +19,20 @@ python_history
 .DS_Store
 *.swp
 *.swo
+
+# App-generated configs (not managed)
+.config/Autodesk/
+.config/ImageMagick/
+.config/rizin/
+.config/slicer.org/
+.config/.clj-kondo/
+.config/.lsp/
+
+# Karabiner auto-backups
+karabiner/.config/karabiner/automatic_backups/
+
+# Archive (retired configs)
+_archive/
+
+# Vim
+vim/.netrwhist

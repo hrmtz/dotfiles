@@ -1,0 +1,8 @@
+^\.git$
+^\.stow-local-ignore$
+\.DS_Store
+\.netrwhist
+\#.*\#
+~$
+\.swp$
+\.swo$
