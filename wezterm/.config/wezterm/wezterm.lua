@@ -2,44 +2,25 @@ local wezterm = require 'wezterm'
 
 local config = {}
 
--- 既存設定
 config.enable_tab_bar = false
 config.window_decorations = "RESIZE"
 config.use_ime = true
+config.unicode_version = 14
 config.font_size = 14.0
-
------------------------------------------------------
--- ■ 1. Quake コンソール設定（最重要）
------------------------------------------------------
-
--- Quake 用にウィンドウ位置とサイズを制御する
-wezterm.on("gui-startup", function(cmd)
-  -- Quake ウィンドウを1つだけ作る
-  local args = cmd.args or {}
-  wezterm.mux.spawn_window{
-    args = args,
-    workspace = "default",
-    position = { x = 0, y = 0 },
-    size = { width = wezterm.gui.screens().active.width, height = math.floor(wezterm.gui.screens().active.height * 0.35) },
-    class = "WezTermQuake",
-  }
-end)
-
--- Quake 用ウィンドウにタイトルを付ける
-config.window_class = "WezTerm"
-config.window_background_opacity = 0.95
-
------------------------------------------------------
--- ■ 2. Quake 呼び出し用トグルのキーバインド
--- skhd から “呼び出すだけ” で toggle が成立する
------------------------------------------------------
-config.keys = {
-  -- F12 や Ctrl+` にしてもいい
-  {
-    key = "F12",
-    mods = "CTRL",
-    action = wezterm.action.Show,
-  },
+config.window_background_opacity = 1.0
+config.color_scheme = "Tokyo Night"
+config.bold_brightens_ansi_colors = true
+config.colors = {
+    brights = {
+        "#666688",  -- bright black (dim text) → 明るいグレーに
+        "#f7768e",  -- bright red
+        "#9ece6a",  -- bright green
+        "#e0af68",  -- bright yellow
+        "#7dcfff",  -- bright blue → 明るい水色に
+        "#bb9af7",  -- bright magenta
+        "#7dcfff",  -- bright cyan
+        "#c0caf5",  -- bright white
+    },
 }
 
 return config
