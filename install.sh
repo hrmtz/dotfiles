@@ -37,6 +37,7 @@ stow_packages() {
 fallback_link() {
   # Codespaces 等 stow がない環境用フォールバック
   link "$DOTFILES_DIR/zsh/.zshrc"            "$HOME/.zshrc"
+  link "$DOTFILES_DIR/zsh/.zshenv"           "$HOME/.zshenv"
   link "$DOTFILES_DIR/zsh/.zprofile"         "$HOME/.zprofile"
   link "$DOTFILES_DIR/zsh/.p10k.zsh"         "$HOME/.p10k.zsh"
   link "$DOTFILES_DIR/zsh/.zsh"              "$HOME/.zsh"
