@@ -9,6 +9,7 @@ fi
 
 # macOS で使う PATH の追加（mac-zshrc から移植）
 path=(
+  $HOME/.orbstack/bin
   $HOME/.local/bin
   /opt/homebrew/opt/python@3.12/bin
   /opt/homebrew/opt/libtool/libexec/gnubin
