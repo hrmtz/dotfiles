@@ -1773,6 +1773,35 @@ typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   # really need it.
   typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
 
+  #######################[ WSL/Ubuntu color override ]########################
+  # Ubuntu brand: Orange (#E95420) + Aubergine (#77216F)
+  # Only applies on WSL (uname -r contains "microsoft")
+  if [[ "$(uname -r)" == *microsoft* ]]; then
+    # OS icon: Ubuntu orange background
+    typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=255
+    typeset -g POWERLEVEL9K_OS_ICON_BACKGROUND=166           # orange
+
+    # Directory: dark aubergine background
+    typeset -g POWERLEVEL9K_DIR_BACKGROUND=133               # aubergine
+    typeset -g POWERLEVEL9K_DIR_FOREGROUND=255
+    typeset -g POWERLEVEL9K_DIR_SHORTENED_FOREGROUND=252
+    typeset -g POWERLEVEL9K_DIR_ANCHOR_FOREGROUND=255
+
+    # VCS (git): orange tones
+    typeset -g POWERLEVEL9K_VCS_CLEAN_BACKGROUND=208          # bright orange
+    typeset -g POWERLEVEL9K_VCS_MODIFIED_BACKGROUND=166       # dark orange
+    typeset -g POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND=208
+    typeset -g POWERLEVEL9K_VCS_CONFLICTED_BACKGROUND=124     # red
+    typeset -g POWERLEVEL9K_VCS_LOADING_BACKGROUND=239
+
+    # Prompt char: orange on success
+    typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_{VIINS,VICMD,VIVIS,VIOWR}_FOREGROUND=208
+
+    # Command execution time: aubergine background
+    typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND=53   # dark aubergine
+    typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND=255
+  fi
+
   # If p10k is already loaded, reload configuration.
   # This works even with POWERLEVEL9K_DISABLE_HOT_RELOAD=true.
   (( ! $+functions[p10k] )) || p10k reload
