@@ -19,5 +19,10 @@ else
   fi
 fi
 
+# Local overrides (machine-specific secrets, not tracked by git)
+if [[ -f "$HOME/.zsh/zshrc.local" ]]; then
+  source "$HOME/.zsh/zshrc.local"
+fi
+
 # OpenClaw Completion
 source <(openclaw completion --shell zsh)
