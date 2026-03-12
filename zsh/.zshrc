@@ -11,9 +11,13 @@ if [[ -n "${CODESPACES:-}" ]]; then
     source "$HOME/.zsh/zshrc.codespaces"
   fi
 else
-  # Assume macOS when OSTYPE matches, otherwise treat as generic linux
-  if [[ "$OSTYPE" == darwin* ]] && [[ -f "$HOME/.zsh/zshrc.macos" ]]; then
+  # Detect Kali Linux first (most specific)
+  if grep -qi kali /etc/os-release 2>/dev/null && [[ -f "$HOME/.zsh/zshrc.kali" ]]; then
+    source "$HOME/.zsh/zshrc.kali"
+  # Assume macOS when OSTYPE matches
+  elif [[ "$OSTYPE" == darwin* ]] && [[ -f "$HOME/.zsh/zshrc.macos" ]]; then
     source "$HOME/.zsh/zshrc.macos"
+  # Generic Linux fallback
   elif [[ -f "$HOME/.zsh/zshrc.linux" ]]; then
     source "$HOME/.zsh/zshrc.linux"
   fi
@@ -24,5 +28,7 @@ if [[ -f "$HOME/.zsh/zshrc.local" ]]; then
   source "$HOME/.zsh/zshrc.local"
 fi
 
-# OpenClaw Completion
-source <(openclaw completion --shell zsh)
+# OpenClaw Completion (optional, skip if not installed)
+if command -v openclaw >/dev/null 2>&1; then
+  source <(openclaw completion --shell zsh) 2>/dev/null || true
+fi

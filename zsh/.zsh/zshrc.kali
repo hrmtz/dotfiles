@@ -1,0 +1,24 @@
+# Kali Linux specific zsh config
+
+##### PATH 関連 #####
+# 基本的な PATH のみ（Homebrew なし）
+export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
+##### Python / 開発ツール #####
+# Kali に標準搭載の python3
+if command -v python3 >/dev/null 2>&1; then
+  alias python="python3"
+fi
+
+# Kali のセキュリティツール（自動検出）
+for tool in nmap sqlmap nikto gobuster hydra; do
+  if command -v "$tool" >/dev/null 2>&1; then
+    # 存在確認済み、特別な alias は不要
+    true
+  fi
+done
+
+# Pentest 学習環境用：SSH キーパス（必要に応じて設定）
+# export SSH_KEY_PATH="$HOME/.ssh/id_rsa"
+
+# Kali はシンプルに。macOS の Homebrew/言語ランタイムは不要
