@@ -79,60 +79,9 @@ fi
 alias ll='ls -la'
 alias gs='git status'
 
-# ===== モダン CLI ツール自動セットアップ =====
-
-# 汎用インストール関数
-_install_modern_tools() {
-  local tools=("$@")
-  local failed=()
-
-  for tool in "${tools[@]}"; do
-    if command -v "$tool" >/dev/null 2>&1; then
-      continue
-    fi
-
-    echo "[setup] Installing $tool..."
-
-    # OS別のインストール処理
-    if grep -qi kali /etc/os-release 2>/dev/null; then
-      # Kali Linux (apt)
-      sudo apt-get update -qq && sudo apt-get install -y "$tool" >/dev/null 2>&1
-    elif [[ "$OSTYPE" == darwin* ]]; then
-      # macOS (brew)
-      if command -v brew >/dev/null 2>&1; then
-        brew install "$tool" >/dev/null 2>&1
-      else
-        echo "[setup] Homebrew not found, skipping $tool"
-        failed+=("$tool")
-        continue
-      fi
-    elif grep -qi microsoft /proc/version 2>/dev/null || grep -qi wsl /proc/version 2>/dev/null; then
-      # WSL (apt)
-      sudo apt-get update -qq && sudo apt-get install -y "$tool" >/dev/null 2>&1
-    else
-      # Generic Linux (apt fallback)
-      if command -v apt-get >/dev/null 2>&1; then
-        sudo apt-get update -qq && sudo apt-get install -y "$tool" >/dev/null 2>&1
-      fi
-    fi
-
-    if command -v "$tool" >/dev/null 2>&1; then
-      echo "[setup] ✓ $tool installed"
-    else
-      echo "[setup] ✗ $tool failed"
-      failed+=("$tool")
-    fi
-  done
-
-  return ${#failed[@]}
-}
-
-# 初回実行時のみセットアップ（キャッシュ）
-if [[ ! -f "$HOME/.zsh/.modern_tools_checked" ]]; then
-  echo "[setup] Installing modern CLI tools..."
-  _install_modern_tools lsd bat ripgrep fd jq delta
-  touch "$HOME/.zsh/.modern_tools_checked"
-fi
+# ===== モダン CLI ツール セットアップ =====
+# 注: 自動インストールは廃止。以下を手動実行してください:
+# $ bash ~/project/dotfiles/install-modern-tools.sh
 
 # ===== モダン CLI エイリアス =====
 
