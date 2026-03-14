@@ -6,8 +6,8 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 info()  { printf "[dotfiles] %s\n" "$*"; }
 warn()  { printf "[dotfiles][WARN] %s\n" "$*" >&2; }
 
-COMMON_PACKAGES=(zsh git vim)
-MACOS_PACKAGES=(hammerspoon karabiner sketchybar tmux wezterm gh)
+COMMON_PACKAGES=(zsh git vim tmux)
+MACOS_PACKAGES=(hammerspoon karabiner sketchybar wezterm gh)
 
 detect_platform() {
   if [ -n "${CODESPACES:-}" ]; then echo "codespaces"
@@ -48,6 +48,7 @@ fallback_link() {
     [git/.gitconfig]=".gitconfig"
     [git/.gitignore_global]=".gitignore_global"
     [vim/.vimrc]=".vimrc"
+    [tmux/.config/tmux/tmux.conf]=".config/tmux/tmux.conf"
   )
 
   for src_rel in "${!fallback_links[@]}"; do
