@@ -79,6 +79,51 @@ fi
 alias ll='ls -la'
 alias gs='git status'
 
+# lsd 自動セットアップ関数
+_setup_lsd() {
+  if command -v lsd >/dev/null 2>&1; then
+    return 0
+  fi
+
+  echo "[lsd] Installing lsd..."
+
+  # OS別のインストール処理
+  if grep -qi kali /etc/os-release 2>/dev/null; then
+    # Kali Linux (apt)
+    sudo apt-get update -qq && sudo apt-get install -y lsd >/dev/null 2>&1
+  elif [[ "$OSTYPE" == darwin* ]]; then
+    # macOS (brew)
+    if command -v brew >/dev/null 2>&1; then
+      brew install lsd >/dev/null 2>&1
+    else
+      echo "[lsd] Homebrew not found, skipping installation"
+      return 1
+    fi
+  elif grep -qi microsoft /proc/version 2>/dev/null || grep -qi wsl /proc/version 2>/dev/null; then
+    # WSL (apt)
+    sudo apt-get update -qq && sudo apt-get install -y lsd >/dev/null 2>&1
+  else
+    # Generic Linux (apt fallback)
+    if command -v apt-get >/dev/null 2>&1; then
+      sudo apt-get update -qq && sudo apt-get install -y lsd >/dev/null 2>&1
+    fi
+  fi
+
+  if command -v lsd >/dev/null 2>&1; then
+    echo "[lsd] ✓ Installation successful"
+    return 0
+  else
+    echo "[lsd] ✗ Installation failed"
+    return 1
+  fi
+}
+
+# 初回実行時のみ lsd セットアップ（キャッシュ）
+if [[ ! -f "$HOME/.zsh/.lsd_checked" ]]; then
+  _setup_lsd
+  touch "$HOME/.zsh/.lsd_checked"
+fi
+
 # ls / cat のモダン代替（存在する場合のみ）
 if command -v lsd >/dev/null 2>&1; then
   alias ls="lsd"
