@@ -147,15 +147,14 @@ if command -v bat >/dev/null 2>&1; then
   alias cat="bat"
 fi
 
-# grep 代替
+# grep 代替（構文はほぼ互換）
 if command -v rg >/dev/null 2>&1; then
   alias grep="rg"
 fi
 
-# find 代替
-if command -v fd >/dev/null 2>&1; then
-  alias find="fd"
-fi
+# fd は find と構文が異なるため alias せず直接使用推奨
+# find: find . -name "*.txt"
+# fd:   fd ".txt"
 
 # git diff 装飾
 if command -v delta >/dev/null 2>&1; then
