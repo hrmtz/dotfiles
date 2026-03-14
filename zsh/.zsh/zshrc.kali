@@ -22,3 +22,19 @@ done
 # export SSH_KEY_PATH="$HOME/.ssh/id_rsa"
 
 # Kali はシンプルに。macOS の Homebrew/言語ランタイムは不要
+
+##### Docker 環境サポート #####
+if [ -f /.dockerenv ] || grep -q 'docker\|containerd' /proc/1/cgroup 2>/dev/null; then
+  # svc コマンド（systemctl 代替）
+  if [ -f "$HOME/.zsh/docker-svc.zsh" ]; then
+    source "$HOME/.zsh/docker-svc.zsh"
+  fi
+
+  # systemctl のフォールバック（エラーメッセージを分かりやすく）
+  systemctl() {
+    echo "systemctl is not available in Docker. Use 'svc' instead:" >&2
+    echo "  svc start <service>    svc stop <service>" >&2
+    echo "  svc status <service>   svc list" >&2
+    return 1
+  }
+fi
