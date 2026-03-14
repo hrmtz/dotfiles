@@ -50,11 +50,12 @@ bindkey '^R' history-incremental-search-backward
 bindkey '^S' history-incremental-search-forward
 
 ##### zinit / plugins / prompt #####
-if [[ ! -d ${HOME}/.zinit/bin ]]; then
-  mkdir -p "${HOME}/.zinit"
-  git clone https://github.com/zdharma-continuum/zinit.git "${HOME}/.zinit/bin"
+# Note: zinit is initialized during install.sh to avoid blocking shell startup
+if [[ -d ${HOME}/.zinit/bin ]]; then
+  source "${HOME}/.zinit/bin/zinit.zsh"
+else
+  echo "[warn] zinit not found; run 'bash ~/project/dotfiles/install.sh' to set up"
 fi
-source "${HOME}/.zinit/bin/zinit.zsh"
 
 # Powerlevel10k 本体（テーマ）
 zinit ice depth=1
@@ -104,10 +105,9 @@ fi
 # fd:   fd ".txt"
 
 # git diff 装飾
+# Note: git config is applied during install.sh, not on every shell startup
 if command -v delta >/dev/null 2>&1; then
   export GIT_PAGER="delta"
-  git config --global core.pager delta
-  git config --global delta.navigate true
 fi
 
 export PATH="$HOME/.local/bin:$HOME/project/multi-agent-njslyr/scripts:$PATH"

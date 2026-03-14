@@ -18,6 +18,9 @@ fi
 echo "[*] Using apt-get"
 echo ""
 
+# Update package cache once at the beginning
+sudo apt-get update -qq >/dev/null 2>&1
+
 # インストール関数
 install_tool() {
   local cmd=$1
@@ -30,7 +33,6 @@ install_tool() {
   fi
 
   echo "[*] Installing $cmd via apt ($desc)..."
-  sudo apt-get update -qq >/dev/null 2>&1
   sudo apt-get install -y "$pkg" >/dev/null 2>&1 && echo "[✓] $cmd installed" || echo "[✗] Failed to install $cmd"
 }
 
@@ -59,16 +61,12 @@ echo "======================================"
 echo ""
 
 # batcat → bat (Debian/Ubuntu では bat は batcat という名前)
-if ! command -v bat >/dev/null 2>&1 && command -v batcat >/dev/null 2>&1; then
-  echo "[*] Creating symlink: bat → batcat"
-  sudo ln -sf /usr/bin/batcat /usr/bin/bat 2>/dev/null && echo "[✓] bat symlink created" || echo "[!] bat symlink failed"
-fi
+echo "[*] Creating symlink: bat → batcat"
+sudo ln -sf /usr/bin/batcat /usr/bin/bat 2>/dev/null && echo "[✓] bat symlink created" || true
 
 # fdfind → fd シンボリックリンク
-if ! command -v fd >/dev/null 2>&1 && command -v fdfind >/dev/null 2>&1; then
-  echo "[*] Creating symlink: fd → fdfind"
-  sudo ln -sf /usr/bin/fdfind /usr/bin/fd 2>/dev/null && echo "[✓] fd symlink created" || echo "[!] fd symlink failed"
-fi
+echo "[*] Creating symlink: fd → fdfind"
+sudo ln -sf /usr/bin/fdfind /usr/bin/fd 2>/dev/null && echo "[✓] fd symlink created" || true
 
 echo ""
 echo "======================================"
