@@ -145,6 +145,14 @@ main() {
   fi
 
   info "dotfiles install done"
+
+  # Install modern CLI tools
+  info "installing modern CLI tools..."
+  if [ -x "$DOTFILES_DIR/install-modern-tools.sh" ]; then
+    bash "$DOTFILES_DIR/install-modern-tools.sh"
+  else
+    warn "install-modern-tools.sh not found"
+  fi
 }
 
 main "$@"
