@@ -51,6 +51,12 @@ echo "Setting up symlinks..."
 echo "======================================"
 echo ""
 
+# batcat → bat (Debian/Ubuntu では bat は batcat という名前)
+if ! command -v bat >/dev/null 2>&1 && command -v batcat >/dev/null 2>&1; then
+  echo "[*] Creating symlink: bat → batcat"
+  sudo ln -sf /usr/bin/batcat /usr/bin/bat 2>/dev/null && echo "[✓] bat symlink created" || echo "[!] bat symlink failed"
+fi
+
 # fdfind → fd シンボリックリンク
 if ! command -v fd >/dev/null 2>&1 && command -v fdfind >/dev/null 2>&1; then
   echo "[*] Creating symlink: fd → fdfind"
