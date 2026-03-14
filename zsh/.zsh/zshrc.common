@@ -79,59 +79,89 @@ fi
 alias ll='ls -la'
 alias gs='git status'
 
-# lsd 自動セットアップ関数
-_setup_lsd() {
-  if command -v lsd >/dev/null 2>&1; then
-    return 0
-  fi
+# ===== モダン CLI ツール自動セットアップ =====
 
-  echo "[lsd] Installing lsd..."
+# 汎用インストール関数
+_install_modern_tools() {
+  local tools=("$@")
+  local failed=()
 
-  # OS別のインストール処理
-  if grep -qi kali /etc/os-release 2>/dev/null; then
-    # Kali Linux (apt)
-    sudo apt-get update -qq && sudo apt-get install -y lsd >/dev/null 2>&1
-  elif [[ "$OSTYPE" == darwin* ]]; then
-    # macOS (brew)
-    if command -v brew >/dev/null 2>&1; then
-      brew install lsd >/dev/null 2>&1
+  for tool in "${tools[@]}"; do
+    if command -v "$tool" >/dev/null 2>&1; then
+      continue
+    fi
+
+    echo "[setup] Installing $tool..."
+
+    # OS別のインストール処理
+    if grep -qi kali /etc/os-release 2>/dev/null; then
+      # Kali Linux (apt)
+      sudo apt-get update -qq && sudo apt-get install -y "$tool" >/dev/null 2>&1
+    elif [[ "$OSTYPE" == darwin* ]]; then
+      # macOS (brew)
+      if command -v brew >/dev/null 2>&1; then
+        brew install "$tool" >/dev/null 2>&1
+      else
+        echo "[setup] Homebrew not found, skipping $tool"
+        failed+=("$tool")
+        continue
+      fi
+    elif grep -qi microsoft /proc/version 2>/dev/null || grep -qi wsl /proc/version 2>/dev/null; then
+      # WSL (apt)
+      sudo apt-get update -qq && sudo apt-get install -y "$tool" >/dev/null 2>&1
     else
-      echo "[lsd] Homebrew not found, skipping installation"
-      return 1
+      # Generic Linux (apt fallback)
+      if command -v apt-get >/dev/null 2>&1; then
+        sudo apt-get update -qq && sudo apt-get install -y "$tool" >/dev/null 2>&1
+      fi
     fi
-  elif grep -qi microsoft /proc/version 2>/dev/null || grep -qi wsl /proc/version 2>/dev/null; then
-    # WSL (apt)
-    sudo apt-get update -qq && sudo apt-get install -y lsd >/dev/null 2>&1
-  else
-    # Generic Linux (apt fallback)
-    if command -v apt-get >/dev/null 2>&1; then
-      sudo apt-get update -qq && sudo apt-get install -y lsd >/dev/null 2>&1
-    fi
-  fi
 
-  if command -v lsd >/dev/null 2>&1; then
-    echo "[lsd] ✓ Installation successful"
-    return 0
-  else
-    echo "[lsd] ✗ Installation failed"
-    return 1
-  fi
+    if command -v "$tool" >/dev/null 2>&1; then
+      echo "[setup] ✓ $tool installed"
+    else
+      echo "[setup] ✗ $tool failed"
+      failed+=("$tool")
+    fi
+  done
+
+  return ${#failed[@]}
 }
 
-# 初回実行時のみ lsd セットアップ（キャッシュ）
-if [[ ! -f "$HOME/.zsh/.lsd_checked" ]]; then
-  _setup_lsd
-  touch "$HOME/.zsh/.lsd_checked"
+# 初回実行時のみセットアップ（キャッシュ）
+if [[ ! -f "$HOME/.zsh/.modern_tools_checked" ]]; then
+  echo "[setup] Installing modern CLI tools..."
+  _install_modern_tools lsd bat ripgrep fd jq delta
+  touch "$HOME/.zsh/.modern_tools_checked"
 fi
 
-# ls / cat のモダン代替（存在する場合のみ）
+# ===== モダン CLI エイリアス =====
+
+# ls 代替
 if command -v lsd >/dev/null 2>&1; then
   alias ls="lsd"
   alias la="lsd --long --all --group"
 fi
 
+# cat 代替
 if command -v bat >/dev/null 2>&1; then
   alias cat="bat"
+fi
+
+# grep 代替
+if command -v rg >/dev/null 2>&1; then
+  alias grep="rg"
+fi
+
+# find 代替
+if command -v fd >/dev/null 2>&1; then
+  alias find="fd"
+fi
+
+# git diff 装飾
+if command -v delta >/dev/null 2>&1; then
+  export GIT_PAGER="delta"
+  git config --global core.pager delta
+  git config --global delta.navigate true
 fi
 
 export PATH="$HOME/.local/bin:$HOME/project/multi-agent-njslyr/scripts:$PATH"
