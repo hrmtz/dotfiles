@@ -35,6 +35,13 @@ install_tool() {
 }
 
 # インストール実行
+echo "[*] Installing tools..."
+echo ""
+
+# dotfiles 管理ツール
+install_tool "stow" "stow" "dotfiles symlink manager"
+
+echo ""
 echo "[*] Installing modern CLI tools..."
 echo ""
 
