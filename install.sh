@@ -108,6 +108,14 @@ main() {
   platform="$(detect_platform)"
   info "platform: $platform"
 
+  # Install modern CLI tools first (includes stow)
+  info "installing modern CLI tools..."
+  if [ -x "$DOTFILES_DIR/install-modern-tools.sh" ]; then
+    bash "$DOTFILES_DIR/install-modern-tools.sh"
+  else
+    warn "install-modern-tools.sh not found"
+  fi
+
   if command -v stow >/dev/null 2>&1; then
     stow_packages "${COMMON_PACKAGES[@]}"
     if [ "$platform" = "macos" ]; then
@@ -145,14 +153,6 @@ main() {
   fi
 
   info "dotfiles install done"
-
-  # Install modern CLI tools
-  info "installing modern CLI tools..."
-  if [ -x "$DOTFILES_DIR/install-modern-tools.sh" ]; then
-    bash "$DOTFILES_DIR/install-modern-tools.sh"
-  else
-    warn "install-modern-tools.sh not found"
-  fi
 }
 
 main "$@"
