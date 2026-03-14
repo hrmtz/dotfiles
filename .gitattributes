@@ -1,0 +1,7 @@
+# Force LF line endings for shell scripts
+*.sh text eol=lf
+*.zsh text eol=lf
+
+# Git config files
+.gitconfig text eol=lf
+.gitignore text eol=lf
