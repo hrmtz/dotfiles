@@ -143,6 +143,21 @@ main() {
     git clone https://github.com/zdharma-continuum/zinit.git "$HOME/.zinit/bin" 2>/dev/null || warn "zinit clone failed (non-fatal)"
   fi
 
+  # Clean up existing dotfiles symlinks before stow (to avoid conflicts)
+  # Remove symlinks that would be managed by stow
+  info "cleaning up existing dotfiles symlinks"
+  [ -L "$HOME/.zshrc" ] && rm "$HOME/.zshrc"
+  [ -L "$HOME/.zshenv" ] && rm "$HOME/.zshenv"
+  [ -L "$HOME/.zprofile" ] && rm "$HOME/.zprofile"
+  [ -L "$HOME/.p10k.zsh" ] && rm "$HOME/.p10k.zsh"
+  [ -L "$HOME/.p10k.kali.zsh" ] && rm "$HOME/.p10k.kali.zsh"
+  [ -L "$HOME/.p10k.codespaces.zsh" ] && rm "$HOME/.p10k.codespaces.zsh"
+  [ -L "$HOME/.zsh" ] && rm "$HOME/.zsh"
+  [ -L "$HOME/.gitconfig" ] && rm "$HOME/.gitconfig"
+  [ -L "$HOME/.gitignore_global" ] && rm "$HOME/.gitignore_global"
+  [ -L "$HOME/.vimrc" ] && rm "$HOME/.vimrc"
+  [ -L "$HOME/.config/git" ] && rm "$HOME/.config/git"
+
   if command -v stow >/dev/null 2>&1; then
     stow_packages "${COMMON_PACKAGES[@]}"
     if [ "$platform" = "macos" ]; then
