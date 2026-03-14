@@ -75,14 +75,16 @@ echo "Installation Complete!"
 echo "======================================"
 echo ""
 
-# Symlink fixes for Kali/Debian (fd-find → fd, ripgrep → rg)
+# Symlink fixes for Kali/Debian (fdfind → fd, ripgrep → rg)
 if [[ "$OS" == "kali" || "$OS" == "wsl" || "$OS" == "linux" ]]; then
   echo "[*] Setting up symlinks..."
 
-  # fd-find → fd
-  if command -v fd-find >/dev/null 2>&1 && ! command -v fd >/dev/null 2>&1; then
-    echo "[*] Creating symlink: fd → fd-find"
-    sudo ln -sf /usr/bin/fd-find /usr/bin/fd 2>/dev/null && echo "[✓] fd symlink created" || echo "[!] fd symlink failed (may need manual setup)"
+  # fdfind → fd (Kali provides fd-find package with fdfind binary)
+  if ! command -v fd >/dev/null 2>&1; then
+    if command -v fdfind >/dev/null 2>&1; then
+      echo "[*] Creating symlink: fd → fdfind"
+      sudo ln -sf /usr/bin/fdfind /usr/bin/fd 2>/dev/null && echo "[✓] fd symlink created" || echo "[!] fd symlink failed (may need: sudo ln -sf /usr/bin/fdfind /usr/bin/fd)"
+    fi
   fi
 
   # ripgrep → rg (usually already works, but check)
