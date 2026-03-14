@@ -64,7 +64,17 @@
                                 "type": "basic"
                             },
                             {
-                                "description": "control+Bで左カーソル",
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.github\\.wez\\.wezterm$",
+                                            "^com\\.googlecode\\.iterm2$",
+                                            "^com\\.apple\\.Terminal$"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
+                                "description": "control+Bで左カーソル（ターミナル除外）",
                                 "from": {
                                     "key_code": "b",
                                     "modifiers": {
