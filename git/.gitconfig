@@ -3,7 +3,10 @@
 	email = YOUR_EMAIL
 [core]
 	excludesfile = ~/.gitignore_global
+	pager = delta
 [color]
 	ui = auto
 [init]
 	defaultBranch = main
+[delta]
+	navigate = true
