@@ -40,6 +40,8 @@ _archive/
 # Vim
 vim/.netrwhist
 
-# Claude Code & Memory (user-specific, not tracked)
-.claude/
+# Claude Code settings (shared across machines)
+# Exclude credentials and memory (memory managed via MCP server)
+.claude/.credentials.json
+.claude/.mcp.json
 .memory/
