@@ -96,10 +96,8 @@ if command -v bat >/dev/null 2>&1; then
   alias cat="bat"
 fi
 
-# grep 代替（構文はほぼ互換）
-if command -v rg >/dev/null 2>&1; then
-  alias grep="rg"
-fi
+# rg は grep と構文が異なるため alias しない
+# 直接 rg コマンドを使用してください
 
 # fd は find と構文が異なるため alias せず直接使用推奨
 # find: find . -name "*.txt"
