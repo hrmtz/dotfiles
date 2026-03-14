@@ -30,6 +30,7 @@ echo "[*] Detected OS: $OS"
 install_tool() {
   local tool=$1
   local desc=$2
+  local pkg_name=$3  # Optional: package name (different from command name)
 
   if command -v "$tool" >/dev/null 2>&1; then
     echo "[✓] $tool already installed ($desc)"
@@ -38,17 +39,20 @@ install_tool() {
 
   echo "[*] Installing $tool ($desc)..."
 
+  # Package name default to tool name if not specified
+  pkg_name=${pkg_name:-$tool}
+
   case "$OS" in
     macos)
       if ! command -v brew >/dev/null 2>&1; then
         echo "[✗] Homebrew not found, skipping $tool"
         return 1
       fi
-      brew install "$tool" >/dev/null 2>&1 && echo "[✓] $tool installed" || echo "[✗] Failed to install $tool"
+      brew install "$pkg_name" >/dev/null 2>&1 && echo "[✓] $tool installed" || echo "[✗] Failed to install $tool"
       ;;
     kali|wsl|linux)
       sudo apt-get update -qq >/dev/null 2>&1
-      sudo apt-get install -y "$tool" >/dev/null 2>&1 && echo "[✓] $tool installed" || echo "[✗] Failed to install $tool"
+      sudo apt-get install -y "$pkg_name" >/dev/null 2>&1 && echo "[✓] $tool installed" || echo "[✗] Failed to install $tool"
       ;;
   esac
 }
@@ -60,8 +64,8 @@ echo ""
 
 install_tool "lsd" "modern ls (LSDeluxe)"
 install_tool "bat" "enhanced cat"
-install_tool "ripgrep" "fast grep (rg)"
-install_tool "fd" "modern find"
+install_tool "rg" "fast grep (ripgrep)" "ripgrep"
+install_tool "fd" "modern find" "fd-find"
 install_tool "jq" "JSON processor"
 install_tool "delta" "git diff enhancement"
 
@@ -69,6 +73,25 @@ echo ""
 echo "======================================"
 echo "Installation Complete!"
 echo "======================================"
+echo ""
+
+# Symlink fixes for Kali/Debian (fd-find → fd, ripgrep → rg)
+if [[ "$OS" == "kali" || "$OS" == "wsl" || "$OS" == "linux" ]]; then
+  echo "[*] Setting up symlinks..."
+
+  # fd-find → fd
+  if command -v fd-find >/dev/null 2>&1 && ! command -v fd >/dev/null 2>&1; then
+    echo "[*] Creating symlink: fd → fd-find"
+    sudo ln -sf /usr/bin/fd-find /usr/bin/fd 2>/dev/null && echo "[✓] fd symlink created" || echo "[!] fd symlink failed (may need manual setup)"
+  fi
+
+  # ripgrep → rg (usually already works, but check)
+  if ! command -v rg >/dev/null 2>&1 && command -v ripgrep >/dev/null 2>&1; then
+    echo "[*] Creating symlink: rg → ripgrep"
+    sudo ln -sf /usr/bin/ripgrep /usr/bin/rg 2>/dev/null && echo "[✓] rg symlink created" || echo "[!] rg symlink failed"
+  fi
+fi
+
 echo ""
 echo "Available aliases:"
 echo "  ls        → lsd"
