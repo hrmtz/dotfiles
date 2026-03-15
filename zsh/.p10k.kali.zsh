@@ -1830,30 +1830,37 @@
   typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
 
   #######################[ Kali Linux color override ]########################
-  # Kali brand: Blue (#367BF0) + Dark (#1F2229)
-  # OS icon: Kali blue background
+  # Based on kali-kyoto classic theme colors
+  # Dark gray base (238) + cyan/green accents
+  # OS icon: white on dark gray
   typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=255
-  typeset -g POWERLEVEL9K_OS_ICON_BACKGROUND=33              # kali blue
+  typeset -g POWERLEVEL9K_OS_ICON_BACKGROUND=238             # dark gray
 
-  # Directory: dark green background
-  typeset -g POWERLEVEL9K_DIR_BACKGROUND=22                  # dark green
-  typeset -g POWERLEVEL9K_DIR_FOREGROUND=255
-  typeset -g POWERLEVEL9K_DIR_SHORTENED_FOREGROUND=250
-  typeset -g POWERLEVEL9K_DIR_ANCHOR_FOREGROUND=255
+  # Directory: cyan tones on dark gray
+  typeset -g POWERLEVEL9K_DIR_BACKGROUND=238                 # dark gray
+  typeset -g POWERLEVEL9K_DIR_FOREGROUND=31                  # dark cyan
+  typeset -g POWERLEVEL9K_DIR_SHORTENED_FOREGROUND=31
+  typeset -g POWERLEVEL9K_DIR_ANCHOR_FOREGROUND=39           # bright cyan
+  typeset -g POWERLEVEL9K_DIR_ANCHOR_BOLD=true
 
-  # VCS (git): green tones
-  typeset -g POWERLEVEL9K_VCS_CLEAN_BACKGROUND=34            # teal
-  typeset -g POWERLEVEL9K_VCS_MODIFIED_BACKGROUND=28         # green
-  typeset -g POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND=34
-  typeset -g POWERLEVEL9K_VCS_CONFLICTED_BACKGROUND=124      # red
-  typeset -g POWERLEVEL9K_VCS_LOADING_BACKGROUND=239
+  # VCS (git): green/gold on dark gray
+  typeset -g POWERLEVEL9K_VCS_CLEAN_BACKGROUND=238           # dark gray
+  typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND=76            # green
+  typeset -g POWERLEVEL9K_VCS_MODIFIED_BACKGROUND=238
+  typeset -g POWERLEVEL9K_VCS_MODIFIED_FOREGROUND=178         # gold
+  typeset -g POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND=238
+  typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND=76
+  typeset -g POWERLEVEL9K_VCS_CONFLICTED_BACKGROUND=238
+  typeset -g POWERLEVEL9K_VCS_CONFLICTED_FOREGROUND=196       # red
+  typeset -g POWERLEVEL9K_VCS_LOADING_BACKGROUND=238
 
-  # Prompt char: green on success
-  typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_{VIINS,VICMD,VIVIS,VIOWR}_FOREGROUND=34
+  # Prompt char: green on success, red on error
+  typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_{VIINS,VICMD,VIVIS,VIOWR}_FOREGROUND=76
+  typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_{VIINS,VICMD,VIVIS,VIOWR}_FOREGROUND=196
 
-  # Command execution time: dark background
-  typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND=236  # near-black
-  typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND=148  # light green
+  # Command execution time: light gray on dark gray
+  typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND=238
+  typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND=248
 
   # If p10k is already loaded, reload configuration.
   # This works even with POWERLEVEL9K_DISABLE_HOT_RELOAD=true.
