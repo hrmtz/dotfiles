@@ -33,7 +33,7 @@ link() {
 
 stow_packages() {
   cd "$DOTFILES_DIR"
-  stow -v -t "$HOME" "$@"
+  stow -v --adopt -t "$HOME" "$@"
 }
 
 fallback_link() {
@@ -159,7 +159,6 @@ main() {
   )
   for _t in "${_targets[@]}"; do
     [ -L "$_t" ] && rm "$_t"
-    [ -f "$_t" ] && { info "backing up regular file: $_t"; mv "$_t" "$_t.bak"; }
   done
 
   if command -v stow >/dev/null 2>&1; then
@@ -169,6 +168,9 @@ main() {
       # iterm2: AppSupport is an absolute symlink, stow can't handle it
       link "$DOTFILES_DIR/iterm2/.config/iterm2/AppSupport" "$HOME/.config/iterm2/AppSupport"
     fi
+    # --adopt moves existing files into the repo; restore repo to canonical state
+    info "restoring repo after --adopt"
+    git -C "$DOTFILES_DIR" checkout -- . 2>/dev/null || true
   else
     warn "stow not found, using fallback symlinks"
     fallback_link
