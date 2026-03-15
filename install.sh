@@ -147,7 +147,7 @@ main() {
   # Install modern CLI tools first (includes stow)
   info "installing modern CLI tools..."
   if [ -x "$DOTFILES_DIR/install-modern-tools.sh" ]; then
-    bash "$DOTFILES_DIR/install-modern-tools.sh"
+    bash "$DOTFILES_DIR/install-modern-tools.sh" || warn "modern tools install failed (non-fatal)"
   else
     warn "install-modern-tools.sh not found"
   fi
