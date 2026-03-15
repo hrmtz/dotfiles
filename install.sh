@@ -33,7 +33,7 @@ link() {
 
 stow_packages() {
   cd "$DOTFILES_DIR"
-  stow -v --adopt -t "$HOME" "$@"
+  stow -v --adopt --no-folding -t "$HOME" "$@"
 }
 
 fallback_link() {
