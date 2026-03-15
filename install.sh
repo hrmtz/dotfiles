@@ -33,16 +33,20 @@ link() {
 
 stow_packages() {
   cd "$DOTFILES_DIR"
-  # Pre-clean: back up non-symlink files that would conflict with stow
+  # Pre-clean: remove existing targets that would conflict with stow
+  # Handles regular files, stale symlinks (wrong path), and directories
   for pkg in "$@"; do
     [ -d "$DOTFILES_DIR/$pkg" ] || continue
-    while IFS= read -r f; do
-      target="$HOME/${f#./}"
-      if [ -f "$target" ] && [ ! -L "$target" ]; then
-        info "backing up: $target"
+    while IFS= read -r item; do
+      target="$HOME/${item#./}"
+      if [ -L "$target" ]; then
+        rm "$target"
+      elif [ -f "$target" ]; then
+        mv "$target" "$target.bak"
+      elif [ -d "$target" ]; then
         mv "$target" "$target.bak"
       fi
-    done < <(cd "$DOTFILES_DIR/$pkg" && find . -type f)
+    done < <(cd "$DOTFILES_DIR/$pkg" && find . -mindepth 1 -depth)
   done
   stow -v --no-folding -t "$HOME" "$@"
 }
