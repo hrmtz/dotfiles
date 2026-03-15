@@ -33,20 +33,18 @@ link() {
 
 stow_packages() {
   cd "$DOTFILES_DIR"
-  # Pre-clean: remove existing targets that would conflict with stow
-  # Handles regular files, stale symlinks (wrong path), and directories
+  # Pre-clean: remove existing file/symlink targets that would conflict with stow
+  # Directories are left alone — --no-folding lets stow work inside them
   for pkg in "$@"; do
     [ -d "$DOTFILES_DIR/$pkg" ] || continue
-    while IFS= read -r item; do
-      target="$HOME/${item#./}"
+    while IFS= read -r f; do
+      target="$HOME/${f#./}"
       if [ -L "$target" ]; then
         rm "$target"
       elif [ -f "$target" ]; then
         mv "$target" "$target.bak"
-      elif [ -d "$target" ]; then
-        mv "$target" "$target.bak"
       fi
-    done < <(cd "$DOTFILES_DIR/$pkg" && find . -mindepth 1 -depth)
+    done < <(cd "$DOTFILES_DIR/$pkg" && find . -type f)
   done
   stow -v --no-folding -t "$HOME" "$@"
 }
