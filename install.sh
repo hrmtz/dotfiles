@@ -44,6 +44,7 @@ fallback_link() {
     [zsh/.zshenv]=".zshenv"
     [zsh/.zprofile]=".zprofile"
     [zsh/.p10k.zsh]=".p10k.zsh"
+    [zsh/.p10k.kali.zsh]=".p10k.kali.zsh"
     [zsh/.zsh]=".zsh"
     [git/.gitconfig]=".gitconfig"
     [git/.gitignore_global]=".gitignore_global"

@@ -1775,7 +1775,7 @@ typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
 
   #######################[ WSL/Ubuntu color override ]########################
   # Ubuntu brand: Orange (#E95420) + Aubergine (#77216F)
-  # Only applies on WSL (uname -r contains "microsoft")
+  # Only applies on WSL Ubuntu (not Kali, not macOS)
   if [[ "$(uname -r)" == *microsoft* ]]; then
     # OS icon: Ubuntu orange background
     typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=255

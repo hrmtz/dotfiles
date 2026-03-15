@@ -73,9 +73,10 @@ zinit light zdharma-continuum/fast-syntax-highlighting
 zinit light MichaelAquilina/zsh-you-should-use
 
 # p10k 設定ファイル（環境ごとに読み分け）
-# p10k configure で生成される ~/.p10k.zsh を優先
 if [[ -n "${CODESPACES:-}" ]] && [[ -r "$HOME/.p10k.codespaces.zsh" ]]; then
   source "$HOME/.p10k.codespaces.zsh"
+elif grep -qi kali /etc/os-release 2>/dev/null && [[ -r "$HOME/.p10k.kali.zsh" ]]; then
+  source "$HOME/.p10k.kali.zsh"
 elif [[ -r "$HOME/.p10k.zsh" ]]; then
   source "$HOME/.p10k.zsh"
 fi

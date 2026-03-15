@@ -41,6 +41,3 @@ if command -v openclaw >/dev/null 2>&1; then
 fi
 
 # p10k config is loaded in zshrc.common
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.kali.zsh.
-[[ ! -f ~/.p10k.kali.zsh ]] || source ~/.p10k.kali.zsh
