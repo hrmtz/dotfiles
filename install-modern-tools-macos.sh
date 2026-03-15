@@ -9,6 +9,13 @@ echo "======================================"
 echo "Modern CLI Tools Installer (macOS)"
 echo "======================================"
 
+# Homebrew PATH (non-interactive shell では .zprofile が読まれない)
+if [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x /usr/local/bin/brew ]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
+
 # Homebrew チェック
 if ! command -v brew >/dev/null 2>&1; then
   echo "[✗] Homebrew not found. Install from https://brew.sh"
