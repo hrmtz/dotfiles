@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm zsh/.zsh/.modern_tools_checked && git pull)",
+      "Bash(git pull:*)",
+      "Bash(rm:*)",
+      "Bash(bash install.sh)",
+      "Bash(git add:*)"
+    ]
+  }
+}

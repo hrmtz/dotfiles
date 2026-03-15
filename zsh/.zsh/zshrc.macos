@@ -47,3 +47,6 @@ alias ls='lsd'
 alias bridge="open -a Adobe\ Bridge\ 2025"
 
 # Mac でだけ使いたい alias や環境変数はここに追加
+
+# Docker aliases
+alias kali='docker exec -it -u hrmtz kali zsh'
