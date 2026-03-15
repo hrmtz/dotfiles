@@ -45,6 +45,7 @@ fallback_link() {
     [zsh/.zprofile]=".zprofile"
     [zsh/.p10k.zsh]=".p10k.zsh"
     [zsh/.p10k.kali.zsh]=".p10k.kali.zsh"
+    [zsh/.p10k.ubuntu.zsh]=".p10k.ubuntu.zsh"
     [zsh/.zsh]=".zsh"
     [git/.gitconfig]=".gitconfig"
     [git/.gitignore_global]=".gitignore_global"
@@ -131,13 +132,6 @@ main() {
     warn "install-modern-tools.sh not found"
   fi
 
-  # Configure git for delta (one-time setup, not on every shell startup)
-  if command -v delta >/dev/null 2>&1; then
-    info "configuring git for delta"
-    git config --global core.pager delta 2>/dev/null || true
-    git config --global delta.navigate true 2>/dev/null || true
-  fi
-
   # Initialize zinit for shell plugins (one-time setup, not on every startup)
   if [ ! -d "$HOME/.zinit/bin" ]; then
     info "initializing zinit"
@@ -145,20 +139,28 @@ main() {
     git clone https://github.com/zdharma-continuum/zinit.git "$HOME/.zinit/bin" 2>/dev/null || warn "zinit clone failed (non-fatal)"
   fi
 
-  # Clean up existing dotfiles symlinks before stow (to avoid conflicts)
-  # Remove symlinks that would be managed by stow
-  info "cleaning up existing dotfiles symlinks"
-  [ -L "$HOME/.zshrc" ] && rm "$HOME/.zshrc"
-  [ -L "$HOME/.zshenv" ] && rm "$HOME/.zshenv"
-  [ -L "$HOME/.zprofile" ] && rm "$HOME/.zprofile"
-  [ -L "$HOME/.p10k.zsh" ] && rm "$HOME/.p10k.zsh"
-  [ -L "$HOME/.p10k.kali.zsh" ] && rm "$HOME/.p10k.kali.zsh"
-  [ -L "$HOME/.p10k.codespaces.zsh" ] && rm "$HOME/.p10k.codespaces.zsh"
-  [ -L "$HOME/.zsh" ] && rm "$HOME/.zsh"
-  [ -L "$HOME/.gitconfig" ] && rm "$HOME/.gitconfig"
-  [ -L "$HOME/.gitignore_global" ] && rm "$HOME/.gitignore_global"
-  [ -L "$HOME/.vimrc" ] && rm "$HOME/.vimrc"
-  [ -L "$HOME/.config/git" ] && rm "$HOME/.config/git"
+  # Clean up existing dotfiles before stow (to avoid conflicts)
+  # Remove both symlinks and regular files that would be managed by stow
+  info "cleaning up existing dotfiles"
+  local _targets=(
+    "$HOME/.zshrc"
+    "$HOME/.zshenv"
+    "$HOME/.zprofile"
+    "$HOME/.p10k.zsh"
+    "$HOME/.p10k.kali.zsh"
+    "$HOME/.p10k.ubuntu.zsh"
+    "$HOME/.p10k.codespaces.zsh"
+    "$HOME/.zsh"
+    "$HOME/.gitconfig"
+    "$HOME/.gitignore_global"
+    "$HOME/.vimrc"
+    "$HOME/.config/git"
+    "$HOME/.config/tmux/tmux.conf"
+  )
+  for _t in "${_targets[@]}"; do
+    [ -L "$_t" ] && rm "$_t"
+    [ -f "$_t" ] && { info "backing up regular file: $_t"; mv "$_t" "$_t.bak"; }
+  done
 
   if command -v stow >/dev/null 2>&1; then
     stow_packages "${COMMON_PACKAGES[@]}"
@@ -170,6 +172,13 @@ main() {
   else
     warn "stow not found, using fallback symlinks"
     fallback_link
+  fi
+
+  # Configure git for delta (after stow so ~/.gitconfig symlink exists)
+  if command -v delta >/dev/null 2>&1; then
+    info "configuring git for delta"
+    git config --global core.pager delta 2>/dev/null || true
+    git config --global delta.navigate true 2>/dev/null || true
   fi
 
   # Set default shell to zsh when available (best-effort)
