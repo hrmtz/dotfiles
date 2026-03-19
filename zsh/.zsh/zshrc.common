@@ -119,3 +119,6 @@ if command -v delta >/dev/null 2>&1; then
 fi
 
 export PATH="$HOME/.local/bin:$HOME/project/multi-agent-njslyr/scripts:$PATH"
+
+##### シークレット (dotfiles管理外) #####
+[[ -r "$HOME/.zsh_secrets" ]] && source "$HOME/.zsh_secrets"
