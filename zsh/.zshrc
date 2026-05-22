@@ -41,3 +41,11 @@ if command -v openclaw >/dev/null 2>&1; then
 fi
 
 # p10k config is loaded in zshrc.common
+
+# 1Password CLI biometric unlock
+export OP_BIOMETRIC_UNLOCK_ENABLED=true
+export EDITOR="vim"
+
+# Android SDK
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
