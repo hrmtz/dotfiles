@@ -41,3 +41,16 @@ if command -v openclaw >/dev/null 2>&1; then
 fi
 
 # p10k config is loaded in zshrc.common
+
+# --- credential_scrub: route `sops edit` through manifest regen wrapper ---
+# Installed by deploy of /tmp/cred_hash_skeleton/v2 (2026-05-24).
+# Without this, bare `sops edit` silently drifts the credential_scrub manifest.
+# See ~/.claude/hooks/sops_edit_wrapper.sh + DESIGN.md §11.1.1.
+sops() {
+    if [ "$1" = "edit" ] && [ -n "${2:-}" ] && [ -f "$2" ]; then
+        shift
+        command sops-rotate "$@"
+    else
+        command sops "$@"
+    fi
+}
